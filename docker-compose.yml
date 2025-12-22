@@ -1,0 +1,128 @@
+# TrustCheck Israel - Docker Compose Configuration
+# Production deployment with Next.js + NGINX
+
+version: '3.8'
+
+services:
+  # PostgreSQL Database (Government Data Cache)
+  postgres:
+    image: postgres:15-alpine
+    container_name: trustcheck-postgres
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-trustcheck_gov_data}
+      POSTGRES_USER: ${POSTGRES_USER:-trustcheck_admin}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./scripts/db/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    networks:
+      - trustcheck-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-trustcheck_admin} -d ${POSTGRES_DB:-trustcheck_gov_data}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # Next.js Application
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: trustcheck-app
+    restart: unless-stopped
+    ports:
+      - "3001:3000"
+    volumes:
+      - ./logs/app:/app/.next/logs:rw
+    environment:
+      # Node Environment
+      - NODE_ENV=production
+      
+      # PostgreSQL (Government Data)
+      - POSTGRES_HOST=postgres
+      - POSTGRES_PORT=5432
+      - POSTGRES_DB=${POSTGRES_DB:-trustcheck_gov_data}
+      - POSTGRES_USER=${POSTGRES_USER:-trustcheck_admin}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      
+      # CheckID API
+      - CHECKID_API_KEY=${CHECKID_API_KEY}
+      - CHECKID_API_URL=${CHECKID_API_URL:-https://api.checkid.co.il}
+      
+      # Google Gemini API
+      - GOOGLE_API_KEY=${GOOGLE_API_KEY}
+      - GOOGLE_GEMINI_MODEL=${GOOGLE_GEMINI_MODEL:-gemini-2.0-flash}
+      - GOOGLE_API_ENDPOINT=${GOOGLE_API_ENDPOINT:-https://generativelanguage.googleapis.com/v1beta}
+      
+      # Stripe Payment
+      - STRIPE_PUBLIC_KEY=${STRIPE_PUBLIC_KEY}
+      - STRIPE_SECRET_KEY=${STRIPE_SECRET_KEY}
+      - STRIPE_WEBHOOK_SECRET=${STRIPE_WEBHOOK_SECRET}
+      
+      # Supabase Database
+      - DATABASE_URL=${DATABASE_URL}
+      - DIRECT_URL=${DIRECT_URL}
+      
+      # Application Settings
+      - NEXT_PUBLIC_APP_URL=${NEXT_PUBLIC_APP_URL:-https://trustcheck.co.il}
+      - NEXT_PUBLIC_APP_NAME=TrustCheck Israel
+      
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - trustcheck-network
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # NGINX Reverse Proxy
+  nginx:
+    image: nginx:alpine
+    container_name: trustcheck-nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.dev.conf:/etc/nginx/nginx.conf:ro
+      - ./logs/nginx:/var/log/nginx:rw
+    depends_on:
+      - app
+    networks:
+      - trustcheck-network
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+volumes:
+  postgres_data:
+    driver: local
+
+networks:
+  trustcheck-network:
+    driver: bridge
+    name: trustcheck-network

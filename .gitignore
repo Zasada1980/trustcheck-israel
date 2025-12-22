@@ -1,0 +1,136 @@
+# TrustCheck Israel - Git Ignore Configuration
+
+# ============================================
+# Environment Variables (CRITICAL - NEVER COMMIT!)
+# ============================================
+.env
+.env.local
+.env.production
+.env.development
+.env.test
+.env*.local
+
+# ============================================
+# Next.js Build Outputs
+# ============================================
+.next/
+out/
+build/
+dist/
+
+# ============================================
+# Node.js Dependencies
+# ============================================
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# ============================================
+# IDE & Editor Files
+# ============================================
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+*.sublime-project
+*.sublime-workspace
+.project
+.classpath
+.settings/
+
+# ============================================
+# Testing Coverage
+# ============================================
+coverage/
+.nyc_output/
+
+# ============================================
+# Logs (Application & NGINX)
+# ============================================
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# ============================================
+# Large Data Files (Import on Production)
+# ============================================
+data/government/*.csv
+data/government/*.json
+data/government/*.xml
+lerna-debug.log*
+*.lcov
+
+# ============================================
+# Logs
+# ============================================
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# ============================================
+# Docker & Deployment
+# ============================================
+docker-compose.override.yml
+.dockerignore
+
+# SSL Certificates (managed by Certbot)
+ssl/
+*.pem
+*.crt
+*.key
+
+# ============================================
+# OS Files
+# ============================================
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ============================================
+# Temporary Files
+# ============================================
+*.tmp
+*.temp
+*.cache
+.cache/
+
+# ============================================
+# Database
+# ============================================
+*.db
+*.sqlite
+*.sqlite3
+
+# ============================================
+# Sentry
+# ============================================
+.sentryclirc
+.sentry-native-cache/
+
+# ============================================
+# Vercel (if using for preview)
+# ============================================
+.vercel
+
+# ============================================
+# Turbo
+# ============================================
+.turbo
+
+# ============================================
+# TypeScript
+# ============================================
+*.tsbuildinfo
+next-env.d.ts
