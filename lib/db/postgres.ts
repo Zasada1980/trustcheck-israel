@@ -123,7 +123,7 @@ export async function searchLocalCompany(hpNumber: string): Promise<CompanyProfi
         imported_at as "lastUpdated",
         50 as "dataQualityScore"
       FROM companies_registry
-      WHERE hp_number = $1
+      WHERE hp_number = $1::bigint
       LIMIT 1
     `;
 
@@ -144,7 +144,7 @@ export async function searchLocalCompany(hpNumber: string): Promise<CompanyProfi
         share_percentage as "sharePercentage",
         appointment_date as "appointmentDate"
       FROM company_owners
-      WHERE company_hp_number = $1
+      WHERE company_hp_number = $1::bigint
       ORDER BY share_percentage DESC NULLS LAST
     `;
 
@@ -213,7 +213,7 @@ export async function getCompanyLegalCases(hpNumber: string): Promise<LegalCase[
         description,
         data_source as "dataSource"
       FROM legal_cases
-      WHERE company_hp_number = $1
+      WHERE company_hp_number = $1::bigint
       ORDER BY filing_date DESC
     `;
 
@@ -242,7 +242,7 @@ export async function getCompanyExecutionProceedings(hpNumber: string): Promise<
         opening_date as "openingDate",
         closing_date as "closingDate"
       FROM execution_proceedings
-      WHERE company_hp_number = $1
+      WHERE company_hp_number = $1::bigint
       ORDER BY opening_date DESC
     `;
 
@@ -327,7 +327,7 @@ export async function upsertCompanyOwners(hpNumber: string, owners: CompanyOwner
     await client.query('BEGIN');
 
     // Delete existing owners
-    await client.query('DELETE FROM company_owners WHERE company_hp_number = $1', [hpNumber]);
+    await client.query('DELETE FROM company_owners WHERE company_hp_number = $1::bigint', [hpNumber]);
 
     // Insert new owners
     if (owners.length > 0) {
@@ -393,7 +393,7 @@ export async function isCompanyDataOutdated(hpNumber: string): Promise<boolean> 
       SELECT 
         EXTRACT(EPOCH FROM (CURRENT_TIMESTAMP - last_updated)) / 86400 as days_old
       FROM companies_registry
-      WHERE hp_number = $1
+      WHERE hp_number = $1::bigint
     `;
 
     const result = await pool.query(query, [hpNumber]);
