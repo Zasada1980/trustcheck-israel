@@ -12,10 +12,8 @@ DROP TABLE IF EXISTS companies_registry CASCADE;
 -- TABLE: companies_registry (29 columns from data.gov.il)
 -- ============================================
 CREATE TABLE IF NOT EXISTS companies_registry (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    
     -- Core company info (columns 1-12)
-    hp_number BIGINT UNIQUE NOT NULL,                    -- מספר חברה (column 1)
+    hp_number BIGINT PRIMARY KEY,                        -- מספר חברה (column 1)
     name_hebrew TEXT,                                    -- שם חברה (column 2)
     name_english TEXT,                                   -- שם באנגלית (column 3)
     company_type TEXT,                                   -- סוג תאגיד (column 4)
