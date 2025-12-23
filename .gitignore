@@ -10,6 +10,11 @@
 .env.test
 .env*.local
 
+# Security Reports (may contain sensitive data)
+*_FIX_REPORT.md
+*_KEY_*.md
+GOOGLE_API_KEY_FIX_REPORT.md
+
 # ============================================
 # Next.js Build Outputs
 # ============================================
