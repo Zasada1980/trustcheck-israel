@@ -5,11 +5,14 @@
  * 1. PostgreSQL cache (data.gov.il datasets)
  * 2. Real-time scraping (ica.justice.gov.il)
  * 3. Court data (court.gov.il)
- * 4. Fallback to CheckID mock data
+ * 4. Bank of Israel (Mugbalim restricted accounts)
+ * 5. Tax Authority (VAT/Maam status)
+ * 6. Execution Office (Hotzaa LaPoal debt proceedings)
+ * 7. Fallback to CheckID mock data
  * 
  * Strategy:
  * - First try local PostgreSQL (fast, cached)
- * - If not found or outdated → scrape government sites
+ * - Parallel fetch from all free government sources
  * - If scraping fails → fallback to mock data
  */
 
@@ -28,6 +31,12 @@ import {
 } from './db/postgres';
 
 import { getMockBusinessData, type CheckIDBusinessData } from './checkid';
+
+// New CheckID-equivalent free sources
+import { checkMugbalimStatus, type MugbalimCheckResult } from './boi_mugbalim';
+import { checkTaxStatus, type TaxStatus } from './tax_authority';
+import { searchLegalCases, type CourtSearchResult } from './courts_scraper';
+import { searchExecutionProceedings, type ExecutionSearchResult } from './execution_office';
 
 // Types for unified API
 export interface UnifiedBusinessData {
@@ -72,6 +81,22 @@ export interface UnifiedBusinessData {
     }>;
   };
   
+  // NEW: Tax & Regulatory Status
+  taxStatus?: {
+    isMaamRegistered: boolean;      // עוסק מורשה
+    isMaamExempt: boolean;          // עוסק פטור
+    maamNumber?: string;
+    hasNikuiBamakor: boolean;       // ניכוי במקור
+    lastVerified: string;
+  };
+  
+  // NEW: Bank of Israel Restrictions
+  bankingStatus?: {
+    hasRestrictedAccount: boolean;  // חשבון מוגבל
+    restrictionDate?: string;
+    restrictionDetails?: string[];
+  };
+  
   // Industry & Business Info
   industry?: string;
   businessPurpose?: string;
@@ -82,6 +107,8 @@ export interface UnifiedBusinessData {
     hasExecutionProceedings: boolean;
     isCompanyViolating: boolean;
     hasHighDebt: boolean;
+    hasRestrictedBankAccount: boolean;  // NEW
+    hasBankruptcyProceedings: boolean;  // NEW
   };
   
   // Metadata
@@ -93,13 +120,14 @@ export interface UnifiedBusinessData {
 
 /**
  * Main function to get business data
- * Implements hybrid strategy: PostgreSQL → Scraping → Mock
+ * Implements hybrid strategy: PostgreSQL → Parallel Gov Sources → Mock
  */
 export async function getBusinessData(
   hpNumber: string,
   options: {
     forceRefresh?: boolean;  // Force scraping even if cached
     includeLegal?: boolean;   // Include legal cases (slower)
+    includeAllSources?: boolean;  // Include all CheckID-equivalent sources
   } = {}
 ): Promise<UnifiedBusinessData | null> {
   
@@ -131,7 +159,44 @@ export async function getBusinessData(
             ]);
           }
           
-          const result = mapPostgreSQLToUnified(cachedCompany, legalCases, executionProcs);
+          // NEW: Fetch all CheckID-equivalent sources in parallel
+          let mugbalimResult: MugbalimCheckResult | null = null;
+          let taxStatus: TaxStatus | null = null;
+          let courtCases: CourtSearchResult | null = null;
+          let executionResult: ExecutionSearchResult | null = null;
+          
+          if (options.includeAllSources) {
+            console.log(`[UnifiedData] Fetching all free government sources...`);
+            
+            [mugbalimResult, taxStatus, courtCases, executionResult] = await Promise.all([
+              checkMugbalimStatus(hpNumber).catch(err => {
+                console.warn(`[Mugbalim] Error:`, err.message);
+                return null;
+              }),
+              checkTaxStatus(hpNumber).catch(err => {
+                console.warn(`[TaxAuthority] Error:`, err.message);
+                return null;
+              }),
+              searchLegalCases(cachedCompany.nameHebrew, hpNumber).catch(err => {
+                console.warn(`[Courts] Error:`, err.message);
+                return null;
+              }),
+              searchExecutionProceedings(hpNumber, cachedCompany.nameHebrew).catch(err => {
+                console.warn(`[Execution] Error:`, err.message);
+                return null;
+              }),
+            ]);
+          }
+          
+          const result = mapPostgreSQLToUnified(
+            cachedCompany, 
+            legalCases, 
+            executionProcs,
+            mugbalimResult,
+            taxStatus,
+            courtCases,
+            executionResult
+          );
           
           await logScrapingOperation({
             source: 'postgresql',
@@ -227,11 +292,26 @@ export async function searchCompaniesByName(
 function mapPostgreSQLToUnified(
   company: CompanyProfile,
   legalCases: LegalCase[],
-  executionProceedings: ExecutionProceeding[]
+  executionProceedings: ExecutionProceeding[],
+  mugbalimResult?: MugbalimCheckResult | null,
+  taxStatus?: TaxStatus | null,
+  courtCases?: CourtSearchResult | null,
+  executionResult?: ExecutionSearchResult | null
 ): UnifiedBusinessData {
   
   const activeCases = legalCases.filter(c => c.caseStatus === 'פעיל').length;
   const totalDebt = executionProceedings.reduce((sum, proc) => sum + (proc.debtAmount || 0), 0);
+  
+  // Combine court cases from both sources
+  const combinedCourtCases = courtCases?.totalCases || legalCases.length;
+  const combinedActiveCase = courtCases?.activeCases || activeCases;
+  
+  // Combine execution data from both sources
+  const combinedDebt = executionResult?.totalDebt || totalDebt;
+  const combinedExecutionProcs = executionResult?.totalProceedings || executionProceedings.length;
+  
+  // Check for bankruptcy in court cases
+  const hasBankruptcy = courtCases?.bankruptcyCases && courtCases.bankruptcyCases > 0;
   
   return {
     hpNumber: company.hpNumber,
@@ -258,10 +338,10 @@ function mapPostgreSQLToUnified(
     })),
     
     legalIssues: {
-      activeCases,
-      totalCases: legalCases.length,
-      executionProceedings: executionProceedings.length,
-      totalDebt,
+      activeCases: combinedActiveCase,
+      totalCases: combinedCourtCases,
+      executionProceedings: combinedExecutionProcs,
+      totalDebt: combinedDebt,
       recentCases: legalCases.slice(0, 5).map(c => ({
         caseNumber: c.caseNumber,
         caseType: c.caseType,
@@ -270,14 +350,34 @@ function mapPostgreSQLToUnified(
       })),
     },
     
+    // NEW: Tax status from Tax Authority
+    taxStatus: taxStatus ? {
+      isMaamRegistered: taxStatus.isMaamRegistered,
+      isMaamExempt: taxStatus.isMaamExempt,
+      maamNumber: taxStatus.maamNumber,
+      hasNikuiBamakor: taxStatus.hasNikuiBamakor,
+      lastVerified: taxStatus.lastVerified,
+    } : undefined,
+    
+    // NEW: Banking status from Bank of Israel
+    bankingStatus: mugbalimResult ? {
+      hasRestrictedAccount: mugbalimResult.isRestricted,
+      restrictionDate: mugbalimResult.records[0]?.restrictionDate,
+      restrictionDetails: mugbalimResult.records.map(r => 
+        `${r.bank || 'Unknown Bank'} - ${r.restrictionDate}`
+      ),
+    } : undefined,
+    
     industry: undefined, // TODO: Add industry classification
     businessPurpose: company.businessPurpose,
     
     riskIndicators: {
-      hasActiveLegalCases: activeCases > 0,
-      hasExecutionProceedings: executionProceedings.length > 0,
+      hasActiveLegalCases: combinedActiveCase > 0,
+      hasExecutionProceedings: combinedExecutionProcs > 0,
       isCompanyViolating: company.status === 'מפרת חוק' || company.status === 'violating',
-      hasHighDebt: totalDebt > 100000, // ₪100K threshold
+      hasHighDebt: combinedDebt > 100000, // ₪100K threshold
+      hasRestrictedBankAccount: mugbalimResult?.isRestricted || false,
+      hasBankruptcyProceedings: hasBankruptcy || false,
     },
     
     dataSource: 'postgresql',
@@ -331,6 +431,8 @@ function mapCheckIDToUnified(mockData: CheckIDBusinessData): UnifiedBusinessData
       hasExecutionProceedings: false,
       isCompanyViolating: mockData.status === 'violating',
       hasHighDebt: false,
+      hasRestrictedBankAccount: false,
+      hasBankruptcyProceedings: false,
     },
     
     dataSource: 'mock_data',
@@ -346,8 +448,20 @@ function mapCheckIDToUnified(mockData: CheckIDBusinessData): UnifiedBusinessData
 export async function checkDataSourcesHealth() {
   const postgresql = await checkDatabaseHealth();
   
+  // NEW: Check all CheckID-equivalent sources
+  const [boiHealth, taxHealth, courtsHealth, executionHealth] = await Promise.allSettled([
+    checkMugbalimStatus('000000000').then(() => true).catch(() => false),
+    checkTaxStatus('000000000').then(() => true).catch(() => false),
+    searchLegalCases('Test Company').then(() => true).catch(() => false),
+    searchExecutionProceedings('000000000').then(() => true).catch(() => false),
+  ]);
+  
   return {
     postgresql,
+    boi_mugbalim: boiHealth.status === 'fulfilled' ? boiHealth.value : false,
+    tax_authority: taxHealth.status === 'fulfilled' ? taxHealth.value : false,
+    courts: courtsHealth.status === 'fulfilled' ? courtsHealth.value : false,
+    execution_office: executionHealth.status === 'fulfilled' ? executionHealth.value : false,
     ica_scraping: false,  // TODO: Implement scraper health check
     court_scraping: false, // TODO: Implement scraper health check
     mock_data: true,

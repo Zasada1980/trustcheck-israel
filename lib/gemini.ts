@@ -93,47 +93,70 @@ function buildReportPrompt(data: CheckIDBusinessData): string {
     ? data.owners.map(o => `${o.name}${o.role ? ` (${o.role})` : ''}`).join(', ')
     : '';
   
+  // NEW: Extract enhanced data from unified sources
+  const hasRestrictedAccount = (data as any).bankingStatus?.hasRestrictedAccount;
+  const isMaamRegistered = (data as any).taxStatus?.isMaamRegistered;
+  const activeLegalCases = (data as any).legalIssues?.activeCases || 0;
+  const totalDebt = (data as any).legalIssues?.totalDebt || 0;
+  const hasBankruptcy = (data as any).riskIndicators?.hasBankruptcyProceedings;
+  
   return `
 אתה מומחה לניתוח עסקים בישראל. צור דוח אמינות מקיף בעברית עבור העסק הבא:
 
+**מידע בסיסי:**
 שם העסק: ${data.name}
-${data.registrationNumber ? `מספר רישום: ${data.registrationNumber}` : ''}
+${data.registrationNumber ? `מספר רישום (ח.פ): ${data.registrationNumber}` : ''}
 ${data.type ? `סוג: ${data.type}` : ''}
-${data.status ? `סטטוס: ${data.status}` : ''}
+${data.status ? `סטטוס רישום: ${data.status}` : ''}
 ${data.foundedDate ? `תאריך הקמה: ${data.foundedDate}` : ''}
 ${addressStr ? `כתובת: ${addressStr}` : ''}
 ${ownersStr ? `בעלים: ${ownersStr}` : ''}
 ${data.industry ? `תחום עיסוק: ${data.industry}` : ''}
-${data.risks && data.risks.length > 0 ? `סיכונים ידועים: ${data.risks.join('; ')}` : ''}
+
+**מידע משפטי ופיננסי (ממקורות ממשלתיים):**
+${isMaamRegistered !== undefined ? `רישום מע"מ: ${isMaamRegistered ? '✅ עוסק מורשה' : '⚠️ עוסק פטור/לא רשום'}` : ''}
+${hasRestrictedAccount ? `🚨 חשבון בנק מוגבל (בנק ישראל) - 10+ שיקים חוזרים!` : '✅ אין חשבונות מוגבלים'}
+${activeLegalCases > 0 ? `⚠️ ${activeLegalCases} תיקים משפטיים פעילים בבתי המשפט` : '✅ אין תיקים משפטיים פעילים'}
+${totalDebt > 0 ? `⚠️ חובות בהוצאה לפועל: ₪${totalDebt.toLocaleString()}` : '✅ אין חובות בהוצאה לפועל'}
+${hasBankruptcy ? `🚨 תיקי פשיטת רגל/פירוק פעילים!` : ''}
+${data.risks && data.risks.length > 0 ? `סיכונים נוספים: ${data.risks.join('; ')}` : ''}
 ${data.strengths && data.strengths.length > 0 ? `נקודות חוזק: ${data.strengths.join('; ')}` : ''}
 
-הדוח צריך לכלול:
+**הדוח צריך לכלול:**
 
 1. **סיכום כללי** (2-3 משפטים):
    - האם העסק מומלץ או לא
    - רמת אמינות (1-5 כוכבים)
+   - **חשוב:** אם יש חשבון בנק מוגבל או פשיטת רגל - ציון מקסימום 2 כוכבים!
 
 2. **נקודות חוזק**:
-   - מה טוב בעסק הזה
+   - מה טוב בעסק הזה (רישום תקין, אין חובות, וכו')
    - למה כדאי לסמוך עליו
 
 3. **נקודות חולשה/סיכונים**:
-   - על מה צריך לשים לב
-   - אזהרות אפשריות
+   - **אם יש חשבון בנק מוגבל:** הסבר שזה אומר 10+ שיקים חוזרים - סיכון מאוד גבוה!
+   - **אם יש חובות הוצל"פ:** הסבר שהעסק לא משלם חובות - סיכון תשלום
+   - **אם יש תיקים משפטיים:** הסבר מה זה אומר
+   - **אם עוסק פטור:** הסבר שאין חובת דיווח למס הכנסה - פחות שקיפות
+   - אזהרות אפשריות נוספות
 
 4. **המלצות להורים**:
-   - האם כדאי לשלם לעסק הזה
+   - האם כדאי לשלם לעסק הזה מראש
    - על מה לשאול לפני תשלום
-   - איך להתגונן משרות/הונאות
+   - איך להתגונן משרות/הונאות (למשל: דרוש חשבונית, חוזה בכתב, תשלום בהמחאות)
 
 5. **סיכום סופי**:
-   - המלצה ברורה: כן/לא/בתנאים
+   - המלצה ברורה: 
+     * ✅ מומלץ (אם ציון 4-5)
+     * ⚠️ בתנאים (אם ציון 3)
+     * ❌ לא מומלץ (אם ציון 1-2)
 
-פורמט התשובה צריך להיות:
-- בעברית בלבד
-- ברור וקריא להורים
-- עם אייקונים/אמוג׳י לנראות טובה יותר
-- עם ציון מספרי ברור (1-5)
+**כללי חשובים:**
+- פורמט התשובה בעברית בלבד
+- ברור וקריא להורים שלא מבינים משפטים
+- עם אייקונים/אמוג׳י לנראות טובה יותר (✅ ⚠️ ❌ 🚨 ⭐)
+- עם ציון מספרי ברור (1-5 כוכבים)
+- **אם יש חשבון בנק מוגבל או פשיטת רגל - חובה להזהיר בצורה חדה!**
 
 התחל את הדוח עכשיו:
 `.trim();

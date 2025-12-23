@@ -27,12 +27,13 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Получение данных через unified service (PostgreSQL → Scraping → Mock)
+    // Получение данных через unified service (PostgreSQL → All Gov Sources → Mock)
     console.log('[API] Fetching business data for:', businessName, registrationNumber);
     
     const businessData = await getBusinessData(registrationNumber || businessName, {
-      includeLegal: true,  // Include legal cases and execution proceedings
-      forceRefresh: false, // Use cache if available
+      includeLegal: true,       // Include legal cases and execution proceedings
+      forceRefresh: false,      // Use cache if available
+      includeAllSources: true,  // NEW: Include Bank of Israel, Tax Authority, Courts, Execution Office
     });
 
     if (!businessData) {
