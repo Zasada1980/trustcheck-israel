@@ -76,6 +76,9 @@ services:
       - NEXT_PUBLIC_APP_URL=${NEXT_PUBLIC_APP_URL:-https://trustcheck.co.il}
       - NEXT_PUBLIC_APP_NAME=TrustCheck Israel
       
+      # Google Analytics 4
+      - NEXT_PUBLIC_GA_ID=${NEXT_PUBLIC_GA_ID}
+      
     depends_on:
       postgres:
         condition: service_healthy
