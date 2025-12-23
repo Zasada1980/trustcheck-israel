@@ -5,6 +5,7 @@
  * Run: tsx scripts/test_tax_certificates.ts
  */
 
+import 'dotenv/config'; // Load .env variables
 import { scrapeTaxCertificates } from '../lib/scrapers/tax_certificates';
 import { getTaxCertificatesWithCache, getCacheStats } from '../lib/db/tax_certificates_cache';
 

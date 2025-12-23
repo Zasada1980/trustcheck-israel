@@ -105,10 +105,10 @@ export async function scrapeTaxCertificates(
       await page.click('#rbMekabel');
 
       // Wait for button to be enabled (form validation)
-      await page.waitForSelector('input[type="button"][value="המשך"]', { state: 'visible' });
+      await page.waitForSelector('#btnNext', { state: 'visible' });
       
       // Click "המשך" (Continue)
-      await page.click('input[type="button"][value="המשך"]');
+      await page.click('#btnNext');
 
       // Wait for input form to load
       await page.waitForURL(/frmInputMekabel\.aspx/);
@@ -116,10 +116,13 @@ export async function scrapeTaxCertificates(
 
       // Enter HP number
       console.log(`[TaxCertificates] Entering HP number: ${hpNumber}`);
-      await page.fill('input[name*="txtHP"]', hpNumber);
+      await page.fill('#txtMisTik', hpNumber);
 
-      // Submit form
-      await page.click('input[type="button"][value="חיפוש"]');
+      // Wait for form validation
+      await page.waitForTimeout(1000);
+
+      // Submit form (use visible continue button)
+      await page.click('#btnNext');
 
       // Wait for results page
       await page.waitForURL(/frmIshurimInfo\.aspx/, { timeout });
