@@ -110,17 +110,15 @@ export interface UnifiedBusinessData {
       services: 'עפ\'\'י תקנות מ\'\'ה' | 'אין אישור' | 'לא ידוע';
       construction: 'עפ\'\'י תקנות מ\'\'ה' | 'אין אישור' | 'לא ידוע';
       securityCleaning: 'עפ\'\'י תקנות מ\'\'ה' | 'אין אישור' | 'לא ידוע';
-  // Risk Indicators (calculated)
-  riskIndicators: {
-    hasActiveLegalCases: boolean;
-    hasExecutionProceedings: boolean;
-    isCompanyViolating: boolean;
-    hasHighDebt: boolean;
-    hasRestrictedBankAccount: boolean;  // NEW
-    hasBankruptcyProceedings: boolean;  // NEW
-    hasNoBookkeepingApproval: boolean;  // NEW: אין אישור ניהול ספרים
-    hasLimitedWithholdingTaxApprovals: boolean;  // NEW: < 4 ניכוי מס approvals
-  };  cacheAgeDays: number;
+      production: 'עפ\'\'י תקנות מ\'\'ה' | 'אין אישור' | 'לא ידוע';
+      consulting: 'עפ\'\'י תקנות מ\'\'ה' | 'אין אישור' | 'לא ידוע';
+      planningAdvertising: 'עפ\'\'י תקנות מ\'\'ה' | 'אין אישור' | 'לא ידוע';
+      itServices: 'עפ\'\'י תקנות מ\'\'ה' | 'אין אישור' | 'לא ידוע';
+      insurancePension: 'עפ\'\'י תקנות מ\'\'ה' | 'אין אישור' | 'לא ידוע';
+    };
+    _meta: {
+      lastUpdated: string;
+      cacheAgeDays: number;
       source: 'taxinfo.taxes.gov.il';
     };
   };
@@ -144,6 +142,8 @@ export interface UnifiedBusinessData {
     hasHighDebt: boolean;
     hasRestrictedBankAccount: boolean;  // NEW
     hasBankruptcyProceedings: boolean;  // NEW
+    hasNoBookkeepingApproval: boolean;  // NEW: אין אישור ניהול ספרים
+    hasLimitedWithholdingTaxApprovals: boolean;  // NEW: < 4 ניכוי מס approvals
   };
   
   // Metadata
@@ -474,13 +474,6 @@ function mapPostgreSQLToUnified(
       hasBankruptcyProceedings: hasBankruptcy || false,
       hasNoBookkeepingApproval: taxCertificates ? !taxCertificates.bookkeepingApproval.hasApproval : false,
       hasLimitedWithholdingTaxApprovals: taxCertificates ? countWithholdingTaxIssues(taxCertificates) >= 4 : false,
-    },
-      hasActiveLegalCases: combinedActiveCase > 0,
-      hasExecutionProceedings: combinedExecutionProcs > 0,
-      isCompanyViolating: company.violations === 'מפרה' || company.violationsCode === '18',  // FIX: Check violations field!
-      hasHighDebt: combinedDebt > 100000, // ₪100K threshold
-      hasRestrictedBankAccount: mugbalimResult?.isRestricted || false,
-      hasBankruptcyProceedings: hasBankruptcy || false,
     },
     
     dataSource: 'postgresql',

@@ -100,6 +100,13 @@ function buildReportPrompt(data: CheckIDBusinessData): string {
   const totalDebt = (data as any).legalIssues?.totalDebt || 0;
   const hasBankruptcy = (data as any).riskIndicators?.hasBankruptcyProceedings;
   
+  // NEW: Tax certificates (ניהול ספרים + ניכוי מס במקור)
+  const taxCertificates = (data as any).taxCertificates;
+  const hasBookkeepingApproval = taxCertificates?.bookkeepingApproval?.hasApproval;
+  const bookkeepingStatus = taxCertificates?.bookkeepingApproval?.status;
+  const withholdingTaxIssues = taxCertificates ? 
+    Object.values(taxCertificates.withholdingTax || {}).filter((status: any) => status === 'אין אישור').length : 0;
+  
   return `
 אתה מומחה לניתוח עסקים בישראל. צור דוח אמינות מקיף בעברית עבור העסק הבא:
 
@@ -115,6 +122,8 @@ ${data.industry ? `תחום עיסוק: ${data.industry}` : ''}
 
 **מידע משפטי ופיננסי (ממקורות ממשלתיים):**
 ${isMaamRegistered !== undefined ? `רישום מע"מ: ${isMaamRegistered ? '✅ עוסק מורשה' : '⚠️ עוסק פטור/לא רשום'}` : ''}
+${hasBookkeepingApproval !== undefined ? (hasBookkeepingApproval ? '✅ אישור ניהול ספרים תקין מרשות המיסים' : '❌ אין אישור ניהול ספרים (לא מנהל הנהלת חשבונות תקינה!)') : ''}
+${withholdingTaxIssues > 0 ? `⚠️ אין אישור ניכוי מס במקור ב-${withholdingTaxIssues} קטגוריות` : ''}
 ${hasRestrictedAccount ? `🚨 חשבון בנק מוגבל (בנק ישראל) - 10+ שיקים חוזרים!` : '✅ אין חשבונות מוגבלים'}
 ${activeLegalCases > 0 ? `⚠️ ${activeLegalCases} תיקים משפטיים פעילים בבתי המשפט` : '✅ אין תיקים משפטיים פעילים'}
 ${totalDebt > 0 ? `⚠️ חובות בהוצאה לפועל: ₪${totalDebt.toLocaleString()}` : '✅ אין חובות בהוצאה לפועל'}
@@ -131,12 +140,13 @@ ${data.strengths && data.strengths.length > 0 ? `נקודות חוזק: ${data.s
 
 2. **נקודות חוזק**:
    - מה טוב בעסק הזה (רישום תקין, אין חובות, וכו')
-   - למה כדאי לסמוך עליו
-
 3. **נקודות חולשה/סיכונים**:
    - **אם יש חשבון בנק מוגבל:** הסבר שזה אומר 10+ שיקים חוזרים - סיכון מאוד גבוה!
+   - **אם אין אישור ניהול ספרים:** הסבר שהעסק לא מנהל הנהלת חשבונות תקינה - פחות שקיפות, סיכון מס
    - **אם יש חובות הוצל"פ:** הסבר שהעסק לא משלם חובות - סיכון תשלום
    - **אם יש תיקים משפטיים:** הסבר מה זה אומר
+   - **אם עוסק פטור:** הסבר שאין חובת דיווח למס הכנסה - פחות שקיפות
+   - אזהרות אפשריות נוספות:** הסבר מה זה אומר
    - **אם עוסק פטור:** הסבר שאין חובת דיווח למס הכנסה - פחות שקיפות
    - אזהרות אפשריות נוספות
 

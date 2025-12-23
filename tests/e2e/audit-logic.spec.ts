@@ -63,8 +63,8 @@ test.describe('Audit Logic: Violations Detection', () => {
     const result = await getBusinessReport('510000334', 'עין שרה');
 
     // 1. Check no violations
-    expect(result.businessData.violations).toBeOneOf([null, undefined, '']);
-    expect(result.businessData.violationsCode).toBeOneOf([null, undefined, '']);
+    expect([null, undefined, '']).toContain(result.businessData.violations);
+    expect([null, undefined, '']).toContain(result.businessData.violationsCode);
     
     // 2. Check risk indicator
     expect(result.businessData.riskIndicators.isCompanyViolating).toBe(false);
