@@ -98,52 +98,25 @@ export async function searchExecutionProceedings(
 /**
  * Search data.gov.il Open Data Portal for execution data
  * 
- * Advantage: Fast, no rate limits, updated weekly
+ * UPDATE (2025-12-23): data.gov.il does NOT have API for execution proceedings.
+ * Only statistical reports available (XLSX/CSV format):
+ * - Dataset: "דוחות שנתיים של הוצאה לפועל" (Annual Reports)
+ * - Format: Excel files, not queryable API
+ * - Last updated: 2018
+ * 
+ * CONCLUSION: Must use court.gov.il real-time scraping (but ILLEGAL per Hashavim precedent)
+ * 
+ * Alternative: Use BDI Code API (₪1-2 per query) or partner with Takdin (₪5K-15K)
+ * ⚠️ NOTE: CheckID is a COMPETITOR platform, do NOT integrate their API
  */
 async function searchDataGovIl(hpNumber: string): Promise<ExecutionProceeding[]> {
-  const DATA_GOV_API = 'https://data.gov.il/api/3/action/datastore_search';
+  // NOTE: This function is DISABLED because data.gov.il does NOT have execution API
+  // Only static Excel reports available, no real-time data
   
-  try {
-    // Resource ID for Hotzaa LaPoal dataset
-    // NOTE: Find actual resource_id at https://data.gov.il/dataset/execution-office
-    const RESOURCE_ID = 'XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX';
-    
-    const response = await fetch(`${DATA_GOV_API}?resource_id=${RESOURCE_ID}&filters=${JSON.stringify({
-      debtor_id: hpNumber
-    })}&limit=100`, {
-      headers: {
-        'User-Agent': 'datagov-external-client TrustCheck/1.0'
-      }
-    });
-
-    if (!response.ok) {
-      throw new Error(`data.gov.il returned ${response.status}`);
-    }
-
-    const data = await response.json();
-    
-    if (!data.success || !data.result?.records) {
-      return [];
-    }
-
-    // Transform data.gov.il format to our format
-    return data.result.records.map((record: any) => ({
-      proceedingNumber: record.case_number || '',
-      debtorName: record.debtor_name || '',
-      debtorId: record.debtor_id || hpNumber,
-      creditorName: record.creditor_name || '',
-      amount: parseFloat(record.amount) || 0,
-      filingDate: record.filing_date || '',
-      status: mapStatus(record.status),
-      executionOffice: record.office_name || '',
-      lastAction: record.last_action,
-      lastActionDate: record.last_action_date
-    }));
-    
-  } catch (error) {
-    console.error('Error querying data.gov.il execution data:', error);
-    return [];
-  }
+  console.warn('[ExecutionOffice] data.gov.il API does NOT exist for execution proceedings');
+  console.warn('[ExecutionOffice] Alternatives: (1) CheckID API ₪1/query (2) Takdin partnership ₪5K-15K');
+  
+  return [];  // Return empty array (cannot query)
 }
 
 /**

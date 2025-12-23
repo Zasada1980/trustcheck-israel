@@ -8,8 +8,8 @@ COPY companies_registry (
   company_type_code, company_classification_code, purpose_code, 
   limitations_code, violations_code, city_code, street_code, country_code
 ) 
-FROM '/tmp/companies_clean.csv' 
-WITH (FORMAT csv, HEADER true, DELIMITER ',', ENCODING 'UTF8');
+FROM '/tmp/companies_final.csv' 
+WITH (FORMAT csv, HEADER true, DELIMITER ',', ENCODING 'UTF8', QUOTE '"');
 
 -- Show import statistics
 SELECT 

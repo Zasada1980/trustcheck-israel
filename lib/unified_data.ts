@@ -37,6 +37,7 @@ import { checkMugbalimStatus, type MugbalimCheckResult } from './boi_mugbalim';
 import { checkTaxStatus, type TaxStatus } from './tax_authority';
 import { searchLegalCases, type CourtSearchResult } from './courts_scraper';
 import { searchExecutionProceedings, type ExecutionSearchResult } from './execution_office';
+import { getTaxCertificatesWithCache, type CachedTaxCertificates } from './db/tax_certificates_cache';
 
 // Types for unified API
 export interface UnifiedBusinessData {
@@ -96,6 +97,32 @@ export interface UnifiedBusinessData {
     maamNumber?: string;
     hasNikuiBamakor: boolean;       // ניכוי במקור
     lastVerified: string;
+  };
+  
+  // NEW: Tax Certificates (ניהול ספרים + ניכוי מס במקור)
+  taxCertificates?: {
+    bookkeepingApproval: {
+      hasApproval: boolean;
+      expirationDate: string | null;
+      status: 'יש אישור' | 'אין אישור' | 'לא ידוע';
+    };
+    withholdingTax: {
+      services: 'עפ\'\'י תקנות מ\'\'ה' | 'אין אישור' | 'לא ידוע';
+      construction: 'עפ\'\'י תקנות מ\'\'ה' | 'אין אישור' | 'לא ידוע';
+      securityCleaning: 'עפ\'\'י תקנות מ\'\'ה' | 'אין אישור' | 'לא ידוע';
+  // Risk Indicators (calculated)
+  riskIndicators: {
+    hasActiveLegalCases: boolean;
+    hasExecutionProceedings: boolean;
+    isCompanyViolating: boolean;
+    hasHighDebt: boolean;
+    hasRestrictedBankAccount: boolean;  // NEW
+    hasBankruptcyProceedings: boolean;  // NEW
+    hasNoBookkeepingApproval: boolean;  // NEW: אין אישור ניהול ספרים
+    hasLimitedWithholdingTaxApprovals: boolean;  // NEW: < 4 ניכוי מס approvals
+  };  cacheAgeDays: number;
+      source: 'taxinfo.taxes.gov.il';
+    };
   };
   
   // NEW: Bank of Israel Restrictions
@@ -172,11 +199,12 @@ export async function getBusinessData(
           let taxStatus: TaxStatus | null = null;
           let courtCases: CourtSearchResult | null = null;
           let executionResult: ExecutionSearchResult | null = null;
+          let taxCertificates: CachedTaxCertificates | null = null;
           
           if (options.includeAllSources) {
             console.log(`[UnifiedData] Fetching all free government sources...`);
             
-            [mugbalimResult, taxStatus, courtCases, executionResult] = await Promise.all([
+            [mugbalimResult, taxStatus, courtCases, executionResult, taxCertificates] = await Promise.all([
               checkMugbalimStatus(hpNumber).catch(err => {
                 console.warn(`[Mugbalim] Error:`, err.message);
                 return null;
@@ -193,6 +221,10 @@ export async function getBusinessData(
                 console.warn(`[Execution] Error:`, err.message);
                 return null;
               }),
+              getTaxCertificatesWithCache(hpNumber, { forceRefresh: options.forceRefresh }).catch(err => {
+                console.warn(`[TaxCertificates] Error:`, err.message);
+                return null;
+              }),
             ]);
           }
           
@@ -203,7 +235,8 @@ export async function getBusinessData(
             mugbalimResult,
             taxStatus,
             courtCases,
-            executionResult
+            executionResult,
+            taxCertificates
           );
           
           await logScrapingOperation({
@@ -295,6 +328,26 @@ export async function searchCompaniesByName(
 }
 
 /**
+ * Count withholding tax categories without approval
+ * @internal
+ */
+function countWithholdingTaxIssues(certificates: CachedTaxCertificates): number {
+  let count = 0;
+  const categories = certificates.withholdingTaxCategories;
+  
+  if (categories.services === 'אין אישור') count++;
+  if (categories.construction === 'אין אישור') count++;
+  if (categories.securityCleaning === 'אין אישור') count++;
+  if (categories.production === 'אין אישור') count++;
+  if (categories.consulting === 'אין אישור') count++;
+  if (categories.planningAdvertising === 'אין אישור') count++;
+  if (categories.itServices === 'אין אישור') count++;
+  if (categories.insurancePension === 'אין אישור') count++;
+  
+  return count;
+}
+
+/**
  * Map PostgreSQL data to unified format
  */
 function mapPostgreSQLToUnified(
@@ -304,7 +357,8 @@ function mapPostgreSQLToUnified(
   mugbalimResult?: MugbalimCheckResult | null,
   taxStatus?: TaxStatus | null,
   courtCases?: CourtSearchResult | null,
-  executionResult?: ExecutionSearchResult | null
+  executionResult?: ExecutionSearchResult | null,
+  taxCertificates?: CachedTaxCertificates | null
 ): UnifiedBusinessData {
   
   const activeCases = legalCases.filter(c => c.caseStatus === 'פעיל').length;
@@ -376,6 +430,30 @@ function mapPostgreSQLToUnified(
       ),
     } : undefined,
     
+    // NEW: Tax Certificates (ניהול ספרים + ניכוי מס)
+    taxCertificates: taxCertificates ? {
+      bookkeepingApproval: {
+        hasApproval: taxCertificates.bookkeepingApproval.hasApproval,
+        expirationDate: taxCertificates.bookkeepingApproval.expirationDate,
+        status: taxCertificates.bookkeepingApproval.status,
+      },
+      withholdingTax: {
+        services: taxCertificates.withholdingTaxCategories.services,
+        construction: taxCertificates.withholdingTaxCategories.construction,
+        securityCleaning: taxCertificates.withholdingTaxCategories.securityCleaning,
+        production: taxCertificates.withholdingTaxCategories.production,
+        consulting: taxCertificates.withholdingTaxCategories.consulting,
+        planningAdvertising: taxCertificates.withholdingTaxCategories.planningAdvertising,
+        itServices: taxCertificates.withholdingTaxCategories.itServices,
+        insurancePension: taxCertificates.withholdingTaxCategories.insurancePension,
+      },
+      _meta: {
+        lastUpdated: taxCertificates._cache.lastUpdated,
+        cacheAgeDays: taxCertificates._cache.cacheAgeDays,
+        source: 'taxinfo.taxes.gov.il',
+      },
+    } : undefined,
+    
     industry: undefined, // TODO: Add industry classification
     businessPurpose: company.businessPurpose,
     
@@ -388,6 +466,15 @@ function mapPostgreSQLToUnified(
     businessDescription: company.description,
     
     riskIndicators: {
+      hasActiveLegalCases: combinedActiveCase > 0,
+      hasExecutionProceedings: combinedExecutionProcs > 0,
+      isCompanyViolating: company.violations === 'מפרה' || company.violationsCode === '18',  // FIX: Check violations field!
+      hasHighDebt: combinedDebt > 100000, // ₪100K threshold
+      hasRestrictedBankAccount: mugbalimResult?.isRestricted || false,
+      hasBankruptcyProceedings: hasBankruptcy || false,
+      hasNoBookkeepingApproval: taxCertificates ? !taxCertificates.bookkeepingApproval.hasApproval : false,
+      hasLimitedWithholdingTaxApprovals: taxCertificates ? countWithholdingTaxIssues(taxCertificates) >= 4 : false,
+    },
       hasActiveLegalCases: combinedActiveCase > 0,
       hasExecutionProceedings: combinedExecutionProcs > 0,
       isCompanyViolating: company.violations === 'מפרה' || company.violationsCode === '18',  // FIX: Check violations field!
@@ -452,6 +539,8 @@ function mapCheckIDToUnified(mockData: CheckIDBusinessData): UnifiedBusinessData
       hasHighDebt: false,
       hasRestrictedBankAccount: false,
       hasBankruptcyProceedings: false,
+      hasNoBookkeepingApproval: false,
+      hasLimitedWithholdingTaxApprovals: false,
     },
     
     dataSource: 'mock_data',
