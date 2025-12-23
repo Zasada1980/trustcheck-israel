@@ -86,10 +86,12 @@ export default function SearchForm() {
         throw new Error(data.error || 'שגיאה בטעינת הדוח');
       }
 
-      setReport(data.report);
+      // API returns: { success, businessData, aiAnalysis: { fullReport, rating, risks, strengths }, metadata }
+      const reportText = data.aiAnalysis?.fullReport || data.report || '';
+      setReport(reportText);
       
       // Track successful report view
-      const trustScore = data.report?.trustScore || 0;
+      const trustScore = data.aiAnalysis?.rating || data.report?.trustScore || 0;
       analytics.trackReportView(businessName.trim(), trustScore);
       
       // Show rating prompt after 3 seconds
