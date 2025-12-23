@@ -50,19 +50,8 @@ export default function FAQ() {
   ];
 
   return (
-    <section className="py-16 bg-white">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-            שאלות נפוצות
-          </h2>
-          <p className="text-lg text-gray-600">
-            מצא תשובות לשאלות הכי נפוצות
-          </p>
-        </div>
-
-        <div className="space-y-4">
-          {faqs.map((faq, index) => (
+    <div className="space-y-4">
+      {faqs.map((faq, index) => (
             <div
               key={index}
               className="border border-gray-200 rounded-lg overflow-hidden transition-all hover:border-blue-300"
@@ -89,20 +78,5 @@ export default function FAQ() {
             </div>
           ))}
         </div>
-
-        <div className="mt-12 text-center">
-          <p className="text-gray-600 mb-4">
-            לא מצאת תשובה לשאלה שלך?
-          </p>
-          <a
-            href="mailto:support@trustcheck.co.il"
-            className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors"
-          >
-            <span>צור קשר</span>
-            <span>📧</span>
-          </a>
-        </div>
-      </div>
-    </section>
-  );
-}
+      );
+    }
