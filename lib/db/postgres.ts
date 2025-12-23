@@ -105,7 +105,7 @@ export async function searchLocalCompany(hpNumber: string): Promise<CompanyProfi
   try {
     const query = `
       SELECT 
-        id,
+        hp_number as id,
         hp_number as "hpNumber",
         name_hebrew as "nameHebrew",
         name_english as "nameEnglish",
