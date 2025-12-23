@@ -48,6 +48,14 @@ export interface UnifiedBusinessData {
   status: string;
   registrationDate?: string;
   
+  // Regulatory Compliance
+  violations?: string;  // "מפרה" if company violates laws
+  violationsCode?: string;  // Code 18 = violating company
+  limitations?: string;  // "מוגבלת" or other limitations
+  governmentCompany?: string;  // "כן" if government-owned
+  lastAnnualReport?: string;  // Last annual report year
+  businessDescription?: string;  // תאור עיסוק
+  
   // Address
   address: {
     street?: string;
@@ -371,10 +379,18 @@ function mapPostgreSQLToUnified(
     industry: undefined, // TODO: Add industry classification
     businessPurpose: company.businessPurpose,
     
+    // CRITICAL FIX: Check violations field (not status field)
+    violations: company.violations,
+    violationsCode: company.violationsCode,
+    limitations: company.limitations,
+    governmentCompany: company.governmentCompany,
+    lastAnnualReport: company.lastAnnualReport,
+    businessDescription: company.description,
+    
     riskIndicators: {
       hasActiveLegalCases: combinedActiveCase > 0,
       hasExecutionProceedings: combinedExecutionProcs > 0,
-      isCompanyViolating: company.status === 'מפרת חוק' || company.status === 'violating',
+      isCompanyViolating: company.violations === 'מפרה' || company.violationsCode === '18',  // FIX: Check violations field!
       hasHighDebt: combinedDebt > 100000, // ₪100K threshold
       hasRestrictedBankAccount: mugbalimResult?.isRestricted || false,
       hasBankruptcyProceedings: hasBankruptcy || false,
@@ -398,6 +414,9 @@ function mapCheckIDToUnified(mockData: CheckIDBusinessData): UnifiedBusinessData
     companyType: mockData.type,
     status: mockData.status,
     registrationDate: mockData.foundedDate,
+    
+    violations: mockData.status === 'violating' ? 'מפרה' : undefined,
+    violationsCode: mockData.status === 'violating' ? '18' : undefined,
     
     address: {
       street: mockData.address?.street,

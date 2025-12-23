@@ -42,6 +42,15 @@ export interface CompanyProfile {
   website?: string;
   email?: string;
   businessPurpose?: string;
+  
+  // NEW: Regulatory compliance fields (from companies_registry table)
+  violations?: string;  // "מפרה" if company violates laws
+  violationsCode?: string;  // Code 18 = violating company
+  limitations?: string;  // "מוגבלת" or other limitations
+  governmentCompany?: string;  // "כן" if government-owned
+  lastAnnualReport?: string;  // Last annual report year
+  description?: string;  // תאור עיסוק
+  
   dataSource: string;
   lastUpdated: string;
   dataQualityScore: number;
@@ -119,6 +128,15 @@ export async function searchLocalCompany(hpNumber: string): Promise<CompanyProfi
         '' as website,
         '' as email,
         purpose as "businessPurpose",
+        
+        -- NEW: Regulatory compliance fields
+        violations,
+        violations_code as "violationsCode",
+        limitations,
+        government_company as "governmentCompany",
+        last_annual_report_year as "lastAnnualReport",
+        description,
+        
         data_source as "dataSource",
         imported_at as "lastUpdated",
         50 as "dataQualityScore"

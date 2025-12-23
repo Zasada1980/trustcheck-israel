@@ -59,9 +59,17 @@ export async function POST(req: NextRequest) {
       },
       industry: businessData.industry,
       owners: businessData.owners,
-      risks: businessData.riskIndicators.hasActiveLegalCases 
-        ? ['תיקים משפטיים פעילים', 'הוצאה לפועל']
-        : [],
+      
+      // CRITICAL FIX: Build risks array based on actual risk indicators
+      risks: [
+        ...(businessData.riskIndicators.isCompanyViolating ? ['⚠️ חברה מפרת חוק - CRITICAL RISK!'] : []),
+        ...(businessData.riskIndicators.hasRestrictedBankAccount ? ['חשבון בנק מוגבל'] : []),
+        ...(businessData.riskIndicators.hasActiveLegalCases ? ['תיקים משפטיים פעילים'] : []),
+        ...(businessData.riskIndicators.hasExecutionProceedings ? ['הוצאה לפועל'] : []),
+        ...(businessData.riskIndicators.hasHighDebt ? ['חוב גבוה'] : []),
+        ...(businessData.riskIndicators.hasBankruptcyProceedings ? ['הליכי פשיטת רגל'] : []),
+      ],
+      
       strengths: businessData.riskIndicators.isCompanyViolating 
         ? []
         : ['פעילה ללא תיקים משפטיים', 'סטטוס תקין'],
@@ -79,8 +87,22 @@ export async function POST(req: NextRequest) {
       success: true,
       businessData: {
         ...checkIDCompatibleData,
+        
+        // Add regulatory compliance fields
+        nameEnglish: businessData.nameEnglish,
+        violations: businessData.violations,  // "מפרה" if violating
+        violationsCode: businessData.violationsCode,  // Code 18
+        limitations: businessData.limitations,
+        governmentCompany: businessData.governmentCompany,
+        lastAnnualReport: businessData.lastAnnualReport,
+        businessDescription: businessData.businessDescription,
+        businessPurpose: businessData.businessPurpose,
+        
+        // Legal and financial data
         legalIssues: businessData.legalIssues,
         riskIndicators: businessData.riskIndicators,
+        taxStatus: businessData.taxStatus,
+        bankingStatus: businessData.bankingStatus,
       },
       aiAnalysis: {
         rating: keyFacts.trustScore,

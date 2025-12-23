@@ -23,6 +23,7 @@ export interface MugbalimCheckResult {
   records: MugbalimRecord[];
   lastUpdated: string;
   source: 'boi.org.il';
+  disclaimer?: string;  // User-facing explanation when data unavailable
 }
 
 /**
@@ -33,39 +34,66 @@ export interface MugbalimCheckResult {
  */
 export async function checkMugbalimStatus(idNumber: string): Promise<MugbalimCheckResult> {
   try {
+    // Import PostgreSQL pool (only when needed)
+    const { pool } = await import('./db/postgres');
+    
     // Query PostgreSQL cache (updated daily via scheduled job)
     const query = `
       SELECT 
         id_number,
         name_hebrew,
-        account_type,
+        name_english,
         restriction_date,
         bank_name,
-        status,
+        reason,
         last_updated
       FROM boi_mugbalim
       WHERE id_number = $1
-      AND status = 'active'
       ORDER BY restriction_date DESC
+      LIMIT 10
     `;
 
-    // TODO: Implement actual PostgreSQL query when table is created
-    // For now, return mock structure
-    const mockResult: MugbalimCheckResult = {
-      isRestricted: false,
-      records: [],
-      lastUpdated: new Date().toISOString(),
+    const result = await pool.query(query, [idNumber]);
+    
+    if (result.rows.length === 0) {
+      // Not found in restricted accounts list (good news!)
+      // NOTE: BOI removed public CSV access (2024/2025), so database may be empty
+      return {
+        isRestricted: false,
+        records: [],
+        lastUpdated: new Date().toISOString(),
+        source: 'boi.org.il',
+        disclaimer: 'נתוני הגבלות בנקאיות אינם זמינים כרגע. מומלץ לבדוק ישירות בבנק ישראל.'  // Bank restriction data unavailable
+      };
+    }
+
+    // Found restriction(s) - transform PostgreSQL rows to MugbalimRecord format
+    const records: MugbalimRecord[] = result.rows.map(row => ({
+      id: row.id_number,
+      name: row.name_hebrew || row.name_english || 'Unknown',
+      type: 'business',  // Assume business for now (TODO: distinguish individual vs company)
+      restrictionDate: row.restriction_date.toISOString().split('T')[0], // YYYY-MM-DD
+      bank: row.bank_name,
+      status: 'active' as const
+    }));
+
+    return {
+      isRestricted: true,
+      records,
+      lastUpdated: result.rows[0]?.last_updated?.toISOString() || new Date().toISOString(),
       source: 'boi.org.il'
     };
 
-    return mockResult;
-  } catch (error) {
-    console.error('Error checking Mugbalim status:', error);
+  } catch (error: any) {
+    console.error('[BOI Mugbalim] Error checking status:', error.message);
+    
+    // Graceful fallback on error (don't block user)
     return {
       isRestricted: false,
       records: [],
       lastUpdated: new Date().toISOString(),
-      source: 'boi.org.il'
+      source: 'boi.org.il',
+      disclaimer: 'שירות בדיקת הגבלות בנקאיות זמנית לא פעיל.'  // Bank restriction check temporarily unavailable
     };
   }
 }
@@ -120,11 +148,32 @@ export async function getMugbalimStats(): Promise<{
   individuals: number;
   lastUpdated: string;
 }> {
-  // TODO: Implement PostgreSQL query
-  return {
-    totalRestricted: 0,
-    businesses: 0,
-    individuals: 0,
-    lastUpdated: new Date().toISOString()
-  };
+  try {
+    const { pool } = await import('./db/postgres');
+    
+    const query = `
+      SELECT 
+        COUNT(*) as total_restricted,
+        MAX(last_updated) as last_updated
+      FROM boi_mugbalim
+    `;
+    
+    const result = await pool.query(query);
+    const row = result.rows[0];
+    
+    return {
+      totalRestricted: parseInt(row.total_restricted) || 0,
+      businesses: 0,  // TODO: Add type column to distinguish
+      individuals: 0,
+      lastUpdated: row.last_updated?.toISOString() || new Date().toISOString()
+    };
+  } catch (error) {
+    console.error('[BOI Mugbalim] Error getting stats:', error);
+    return {
+      totalRestricted: 0,
+      businesses: 0,
+      individuals: 0,
+      lastUpdated: new Date().toISOString()
+    };
+  }
 }
