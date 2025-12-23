@@ -144,7 +144,7 @@ export async function searchLocalCompany(hpNumber: string): Promise<CompanyProfi
         share_percentage as "sharePercentage",
         appointment_date as "appointmentDate"
       FROM company_owners
-      WHERE company_hp_number = $1::bigint
+      WHERE company_hp_number = $1
       ORDER BY share_percentage DESC NULLS LAST
     `;
 
@@ -213,7 +213,7 @@ export async function getCompanyLegalCases(hpNumber: string): Promise<LegalCase[
         description,
         data_source as "dataSource"
       FROM legal_cases
-      WHERE company_hp_number = $1::bigint
+      WHERE company_hp_number = $1
       ORDER BY filing_date DESC
     `;
 
@@ -242,7 +242,7 @@ export async function getCompanyExecutionProceedings(hpNumber: string): Promise<
         opening_date as "openingDate",
         closing_date as "closingDate"
       FROM execution_proceedings
-      WHERE company_hp_number = $1::bigint
+      WHERE company_hp_number = $1
       ORDER BY opening_date DESC
     `;
 
@@ -327,7 +327,7 @@ export async function upsertCompanyOwners(hpNumber: string, owners: CompanyOwner
     await client.query('BEGIN');
 
     // Delete existing owners
-    await client.query('DELETE FROM company_owners WHERE company_hp_number = $1::bigint', [hpNumber]);
+    await client.query('DELETE FROM company_owners WHERE company_hp_number = $1', [hpNumber]);
 
     // Insert new owners
     if (owners.length > 0) {
