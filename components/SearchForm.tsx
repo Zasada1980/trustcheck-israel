@@ -86,13 +86,14 @@ export default function SearchForm() {
         throw new Error(data.error || 'שגיאה בטעינת הדוח');
       }
 
-      // API returns: { success, businessData, aiAnalysis: { fullReport, rating, risks, strengths }, metadata }
-      const reportText = data.aiAnalysis?.fullReport || data.report || '';
-      setReport(reportText);
+      // API returns: { success, businessData, aiAnalysis, metadata }
+      // Store entire response for structured access
+      setReport(data);
       
       // Track successful report view
-      const trustScore = data.aiAnalysis?.rating || data.report?.trustScore || 0;
-      analytics.trackReportView(businessName.trim(), trustScore);
+      const trustScore = data.aiAnalysis?.rating || 0;
+      const reportBusinessName = data.businessData?.name || businessName.trim();
+      analytics.trackReportView(reportBusinessName, trustScore);
       
       // Show rating prompt after 3 seconds
       setTimeout(() => {
@@ -234,17 +235,17 @@ export default function SearchForm() {
       {report && (
         <div className="bg-white rounded-xl shadow-2xl p-8 border border-gray-100 animate-fadeIn">
           <h3 className="text-2xl font-bold text-gray-900 mb-4 text-right">
-            דוח אמינות: {report.metadata.businessName}
+            דוח אמינות: {report.businessData?.name || 'לא זמין'}
           </h3>
 
           {/* Trust Score */}
           <div className="mb-6 p-4 bg-blue-50 rounded-lg text-right">
             <div className="flex items-center justify-end gap-2 mb-2">
               <span className="text-3xl font-bold text-blue-600">
-                {report.summary.trustScore}/5
+                {report.aiAnalysis?.rating || 0}/5
               </span>
               <span className="text-yellow-500 text-2xl">
-                {'⭐'.repeat(report.summary.trustScore)}
+                {'⭐'.repeat(report.aiAnalysis?.rating || 0)}
               </span>
             </div>
             <p className="text-sm text-gray-600">ציון אמינות</p>
@@ -252,17 +253,17 @@ export default function SearchForm() {
 
           {/* Recommendation Badge */}
           <div className="mb-6 text-right">
-            {report.summary.recommendation === 'approved' && (
+            {report.aiAnalysis?.recommendation === 'approved' && (
               <span className="inline-block bg-green-100 text-green-800 px-4 py-2 rounded-full font-semibold">
                 ✅ מומלץ לסמוך
               </span>
             )}
-            {report.summary.recommendation === 'caution' && (
+            {report.aiAnalysis?.recommendation === 'caution' && (
               <span className="inline-block bg-yellow-100 text-yellow-800 px-4 py-2 rounded-full font-semibold">
                 ⚠️ זהירות - בדוק היטב
               </span>
             )}
-            {report.summary.recommendation === 'rejected' && (
+            {report.aiAnalysis?.recommendation === 'rejected' && (
               <span className="inline-block bg-red-100 text-red-800 px-4 py-2 rounded-full font-semibold">
                 ❌ לא מומלץ
               </span>
@@ -270,13 +271,13 @@ export default function SearchForm() {
           </div>
 
           {/* Strengths */}
-          {report.summary.strengths.length > 0 && (
+          {report.aiAnalysis?.strengths && report.aiAnalysis.strengths.length > 0 && (
             <div className="mb-6">
               <h4 className="text-lg font-semibold text-gray-900 mb-3 text-right">
                 💪 נקודות חוזק
               </h4>
               <ul className="space-y-2 text-right">
-                {report.summary.strengths.map((strength: string, index: number) => (
+                {report.aiAnalysis.strengths.map((strength: string, index: number) => (
                   <li key={index} className="flex items-start justify-end gap-2">
                     <span className="text-gray-900 font-medium">{strength}</span>
                     <span className="text-green-500 mt-1">✓</span>
@@ -287,13 +288,13 @@ export default function SearchForm() {
           )}
 
           {/* Risks */}
-          {report.summary.risks.length > 0 && (
+          {report.aiAnalysis?.risks && report.aiAnalysis.risks.length > 0 && (
             <div className="mb-6">
               <h4 className="text-lg font-semibold text-gray-900 mb-3 text-right">
                 ⚠️ סיכונים
               </h4>
               <ul className="space-y-2 text-right">
-                {report.summary.risks.map((risk: string, index: number) => (
+                {report.aiAnalysis.risks.map((risk: string, index: number) => (
                   <li key={index} className="flex items-start justify-end gap-2">
                     <span className="text-gray-900 font-medium">{risk}</span>
                     <span className="text-red-500 mt-1">⚠</span>
@@ -313,7 +314,7 @@ export default function SearchForm() {
               dir="rtl"
               style={{ whiteSpace: 'pre-wrap', color: '#111827' }}
             >
-              {report.fullText}
+              {report.aiAnalysis?.fullReport || 'דוח לא זמין'}
             </div>
           </div>
 
