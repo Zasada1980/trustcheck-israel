@@ -26,6 +26,9 @@ const pool = new Pool({
   connectionTimeoutMillis: 10000,
 });
 
+// Export pool for direct queries (used by boi_mugbalim.ts, tax_authority.ts, etc.)
+export { pool };
+
 // Types
 export interface CompanyProfile {
   id: string;
