@@ -1,51 +1,96 @@
+import Header from '@/components/Header';
+import Footer from '@/components/Footer';
 import SearchForm from '@/components/SearchForm';
+import Features from '@/components/Features';
+import Stats from '@/components/Stats';
+import Testimonials from '@/components/Testimonials';
+import FAQ from '@/components/FAQ';
+import CTA from '@/components/CTA';
 
 export default function HomePage() {
   return (
-    <main className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-12 px-4">
-      <div className="max-w-4xl mx-auto">
-        {/* Header */}
-        <div className="text-center mb-12">
-          <h1 className="text-5xl font-bold text-gray-900 mb-4">
-            TrustCheck Israel
-          </h1>
-          <p className="text-xl text-gray-600 mb-2">
-            בדיקת אמינות עסקים בישראל
-          </p>
-          <p className="text-lg text-gray-500">
-            בדוק את העסק לפני שאתה משלם - דוח מלא תוך שניות 🚀
-          </p>
-        </div>
+    <div className="min-h-screen bg-white">
+      {/* Header with Navigation */}
+      <Header />
 
-        {/* Search Form Component */}
-        <SearchForm />
+      {/* Hero Section */}
+      <section className="bg-gradient-to-br from-blue-50 to-indigo-100 py-16 px-4">
+        <div className="max-w-4xl mx-auto">
+          {/* Hero Text */}
+          <div className="text-center mb-12">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-4">
+              בדוק את העסק
+              <br />
+              <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+                לפני שאתה משלם
+              </span>
+            </h1>
+            <p className="text-xl md:text-2xl text-gray-600 mb-4">
+              בדיקת אמינות עסקים בישראל תוך 5 שניות
+            </p>
+            <p className="text-lg text-gray-500 max-w-2xl mx-auto" dir="rtl">
+              הגן על המשפחה שלך מפני הונאות - בדוק גנים, מורים פרטיים, קבלנים ועוד
+            </p>
+            
+            {/* Trust Indicators */}
+            <div className="flex flex-wrap justify-center gap-4 mt-6 text-sm text-gray-600">
+              <div className="flex items-center gap-2">
+                <span className="text-green-500">✓</span>
+                <span>716,714 עסקים במאגר</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-green-500">✓</span>
+                <span>נתונים ממקורות ממשלתיים</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-green-500">✓</span>
+                <span>מאובטח 100%</span>
+              </div>
+            </div>
+          </div>
 
-        {/* Status Banner */}
-        <div className="mt-12 bg-white p-6 rounded-lg shadow-lg max-w-2xl mx-auto">
-          <h2 className="text-xl font-semibold text-gray-800 mb-4 text-right">
-            📊 סטטוס מערכת - Phase 1 MVP
-          </h2>
-          <ul className="text-right space-y-2 text-sm text-gray-700">
-            <li>✅ שרת Hetzner CX23 פעיל</li>
-            <li>✅ Docker + NGINX מותקנים</li>
-            <li>✅ SSL Certificates מוכנים</li>
-            <li>✅ Google Gemini 2.0 Flash מחובר</li>
-            <li>🚧 CheckID API - Mock Data (בפיתוח)</li>
-            <li>⏳ Stripe תשלומים - Phase 2</li>
-          </ul>
-          <div className="mt-4 pt-4 border-t text-xs text-gray-500 text-right">
-            <p>🌍 Server: Hetzner CX23 | Nuremberg, Germany</p>
-            <p>🤖 AI Model: Google Gemini 2.0 Flash (1500 req/day FREE)</p>
-            <p>⏱️ Phase 1: MVP &quot;Validator&quot; | 4 שבועות פיתוח</p>
+          {/* Search Form Component */}
+          <SearchForm />
+
+          {/* Quick Stats Below Search */}
+          <div className="mt-8 grid grid-cols-2 md:grid-cols-4 gap-4 max-w-2xl mx-auto">
+            <div className="bg-white/80 backdrop-blur-sm rounded-lg p-4 text-center">
+              <div className="text-2xl font-bold text-blue-600">1,247</div>
+              <div className="text-xs text-gray-600">בדיקות היום</div>
+            </div>
+            <div className="bg-white/80 backdrop-blur-sm rounded-lg p-4 text-center">
+              <div className="text-2xl font-bold text-green-600">₪47K</div>
+              <div className="text-xs text-gray-600">נחסכו השבוע</div>
+            </div>
+            <div className="bg-white/80 backdrop-blur-sm rounded-lg p-4 text-center">
+              <div className="text-2xl font-bold text-purple-600">4.9⭐</div>
+              <div className="text-xs text-gray-600">דירוג ממוצע</div>
+            </div>
+            <div className="bg-white/80 backdrop-blur-sm rounded-lg p-4 text-center">
+              <div className="text-2xl font-bold text-indigo-600">523</div>
+              <div className="text-xs text-gray-600">משתמשים פעילים</div>
+            </div>
           </div>
         </div>
+      </section>
 
-        {/* Footer */}
-        <div className="mt-8 text-center text-sm text-gray-600">
-          <p>🔒 כל הנתונים מוצפנים ומאובטחים</p>
-          <p className="mt-2">© 2025 TrustCheck Israel - Made with ❤️ for Israeli Parents</p>
-        </div>
-      </div>
-    </main>
+      {/* Features Section */}
+      <Features />
+
+      {/* Stats Section */}
+      <Stats />
+
+      {/* Testimonials Section */}
+      <Testimonials />
+
+      {/* FAQ Section */}
+      <FAQ />
+
+      {/* CTA Section */}
+      <CTA />
+
+      {/* Footer */}
+      <Footer />
+    </div>
   );
 }

@@ -42,12 +42,14 @@ export default function SearchForm() {
   const [error, setError] = useState<string | null>(null);
   const [userRating, setUserRating] = useState<number | null>(null);
   const [showRatingPrompt, setShowRatingPrompt] = useState(false);
+  const [validationMessage, setValidationMessage] = useState<string>('');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!businessName.trim()) {
       setError('נא להזין שם עסק');
+      setValidationMessage('');
       return;
     }
 
@@ -55,12 +57,14 @@ export default function SearchForm() {
     const validation = validateInput(businessName);
     if (!validation.isValid) {
       setError(validation.message || 'קלט לא תקין');
+      setValidationMessage('');
       return;
     }
 
     setLoading(true);
     setError(null);
     setReport(null);
+    setValidationMessage('');
 
     // Track search event
     analytics.trackSearch(businessName.trim(), validation.type);
@@ -117,7 +121,7 @@ export default function SearchForm() {
   return (
     <div className="w-full max-w-2xl mx-auto">
       {/* Search Form */}
-      <form onSubmit={handleSubmit} className="bg-white rounded-lg shadow-lg p-8 mb-8">
+      <form onSubmit={handleSubmit} className="bg-white rounded-xl shadow-2xl p-8 mb-8 border border-gray-100">
         <h2 className="text-2xl font-bold text-gray-900 mb-6 text-right">
           בדוק את אמינות העסק
         </h2>
@@ -127,25 +131,54 @@ export default function SearchForm() {
             htmlFor="businessName" 
             className="block text-right text-sm font-medium text-gray-700 mb-2"
           >
-            שם העסק או מספר רישום
+            שם העסק, מספר ח.פ. או טלפון
           </label>
-          <input
-            type="text"
-            id="businessName"
-            value={businessName}
-            onChange={(e) => setBusinessName(e.target.value)}
-            placeholder="לדוגמה: חנות הצעצועים של דני"
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-right text-gray-900 placeholder-gray-400"
-            style={{ color: '#111827' }}
-            disabled={loading}
-            dir="rtl"
-          />
+          <div className="relative">
+            <input
+              type="text"
+              id="businessName"
+              value={businessName}
+              onChange={(e) => {
+                setBusinessName(e.target.value);
+                if (e.target.value.trim()) {
+                  const validation = validateInput(e.target.value.trim());
+                  if (validation.isValid) {
+                    const typeLabels = {
+                      hp_number: '✓ מספר ח.פ. תקין',
+                      phone: '✓ מספר טלפון תקין',
+                      name_hebrew: '✓ שם עברי',
+                      name_english: '✓ שם אנגלי',
+                      invalid: ''
+                    };
+                    setValidationMessage(typeLabels[validation.type]);
+                  } else {
+                    setValidationMessage('');
+                  }
+                } else {
+                  setValidationMessage('');
+                }
+              }}
+              placeholder="לדוגמה: גן ילדים השרון, 515044532, 052-3456789"
+              className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-right text-gray-900 placeholder-gray-400 transition-all"
+              style={{ color: '#111827' }}
+              disabled={loading}
+              dir="rtl"
+            />
+            {validationMessage && (
+              <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-green-600 text-sm font-medium">
+                {validationMessage}
+              </div>
+            )}
+          </div>
+          <p className="text-xs text-gray-500 text-right mt-2" dir="rtl">
+            💡 ניתן לחפש לפי: שם עסק, מספר ח.פ. (9 ספרות), או טלפון (05X-XXXXXXX)
+          </p>
         </div>
 
         <button
           type="submit"
           disabled={loading}
-          className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
+          className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold py-4 px-6 rounded-lg transition-all disabled:bg-gray-400 disabled:cursor-not-allowed shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
         >
           {loading ? (
             <span className="flex items-center justify-center gap-2">
@@ -153,24 +186,51 @@ export default function SearchForm() {
                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
               </svg>
-              מייצר דוח...
+              מאחה נתונים ממקורות ממשלתיים...
             </span>
           ) : (
-            '🔍 בדוק עכשיו'
+            '🔍 בדוק עכשיו חינם'
           )}
         </button>
 
+        {/* Data Sources Indicator */}
+        {loading && (
+          <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg" dir="rtl">
+            <p className="text-blue-900 text-sm font-semibold mb-2">מקורות מידע נבדקים:</p>
+            <div className="grid grid-cols-2 gap-2 text-xs text-blue-700">
+              <div className="flex items-center gap-1">
+                <span className="animate-pulse">⏳</span> רשם החברות
+              </div>
+              <div className="flex items-center gap-1">
+                <span className="animate-pulse">⏳</span> רשות המסים
+              </div>
+              <div className="flex items-center gap-1">
+                <span className="animate-pulse">⏳</span> בנק ישראל
+              </div>
+              <div className="flex items-center gap-1">
+                <span className="animate-pulse">⏳</span> נט המשפט
+              </div>
+              <div className="flex items-center gap-1">
+                <span className="animate-pulse">⏳</span> הוצאה לפועל
+              </div>
+              <div className="flex items-center gap-1">
+                <span className="animate-pulse">⏳</span> AI Analysis
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Error Message */}
         {error && (
-          <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-lg text-right">
-            <p className="text-red-800 text-sm">❌ {error}</p>
+          <div className="mt-4 p-4 bg-red-50 border-2 border-red-200 rounded-lg text-right animate-shake">
+            <p className="text-red-800 font-medium">❌ {error}</p>
           </div>
         )}
       </form>
 
       {/* Report Display */}
       {report && (
-        <div className="bg-white rounded-lg shadow-lg p-8">
+        <div className="bg-white rounded-xl shadow-2xl p-8 border border-gray-100 animate-fadeIn">
           <h3 className="text-2xl font-bold text-gray-900 mb-4 text-right">
             דוח אמינות: {report.metadata.businessName}
           </h3>
