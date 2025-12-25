@@ -107,6 +107,10 @@ function buildReportPrompt(data: CheckIDBusinessData): string {
   const withholdingTaxIssues = taxCertificates ? 
     Object.values(taxCertificates.withholdingTax || {}).filter((status: any) => status === 'אין אישור').length : 0;
   
+  // NEW: Bookkeeping risk assessment (if no direct data)
+  const bookkeepingRisk = (data as any).bookkeepingRisk;
+  const hasRiskAssessment = bookkeepingRisk && bookkeepingRisk.score > 0;
+  
   return `
 אתה מומחה לניתוח עסקים בישראל. צור דוח אמינות מקיף בעברית עבור העסק הבא:
 
@@ -124,6 +128,18 @@ ${data.industry ? `תחום עיסוק: ${data.industry}` : ''}
 ${isMaamRegistered !== undefined ? `רישום מע"מ: ${isMaamRegistered ? '✅ עוסק מורשה' : '⚠️ עוסק פטור/לא רשום'}` : ''}
 ${hasBookkeepingApproval !== undefined ? (hasBookkeepingApproval ? '✅ אישור ניהול ספרים תקין מרשות המיסים' : '❌ אין אישור ניהול ספרים (לא מנהל הנהלת חשבונות תקינה!)') : ''}
 ${withholdingTaxIssues > 0 ? `⚠️ אין אישור ניכוי מס במקור ב-${withholdingTaxIssues} קטגוריות` : ''}
+${hasRiskAssessment ? `
+⚠️ **ניתוח סיכון לאי קיום אישור ניהול ספרים** (על בסיס נתונים ממשלתיים):
+   ציון סיכון: ${bookkeepingRisk.score}% (${bookkeepingRisk.level === 'critical' ? 'קריטי 🔴' : bookkeepingRisk.level === 'high' ? 'גבוה 🟠' : bookkeepingRisk.level === 'medium' ? 'בינוני 🟡' : 'נמוך 🟢'})
+   רמת ודאות: ${bookkeepingRisk.confidence}%
+   
+   גורמי הסיכון שנמצאו:
+   ${bookkeepingRisk.factors.map((f: any) => `- ${f.description} (השפעה: ${f.impact} נקודות)`).join('\n   ')}
+   
+   המלצה: ${bookkeepingRisk.recommendation}
+   
+   **חשוב:** זהו ניתוח הסתברות בלבד! בקש לראות אישור ניהול ספרים ממשי מהעסק.
+` : ''}
 ${hasRestrictedAccount ? `🚨 חשבון בנק מוגבל (בנק ישראל) - 10+ שיקים חוזרים!` : '✅ אין חשבונות מוגבלים'}
 ${activeLegalCases > 0 ? `⚠️ ${activeLegalCases} תיקים משפטיים פעילים בבתי המשפט` : '✅ אין תיקים משפטיים פעילים'}
 ${totalDebt > 0 ? `⚠️ חובות בהוצאה לפועל: ₪${totalDebt.toLocaleString()}` : '✅ אין חובות בהוצאה לפועל'}
@@ -143,6 +159,7 @@ ${data.strengths && data.strengths.length > 0 ? `נקודות חוזק: ${data.s
 3. **נקודות חולשה/סיכונים**:
    - **אם יש חשבון בנק מוגבל:** הסבר שזה אומר 10+ שיקים חוזרים - סיכון מאוד גבוה!
    - **אם אין אישור ניהול ספרים:** הסבר שהעסק לא מנהל הנהלת חשבונות תקינה - פחות שקיפות, סיכון מס
+   - **אם יש ציון סיכון גבוה (>70%):** הסבר שלפי ניתוח נתונים ממשלתיים - סבירות גבוהה לבעיות מס/רישום. ממליץ לבקש אישור ניהול ספרים במפורש!
    - **אם יש חובות הוצל"פ:** הסבר שהעסק לא משלם חובות - סיכון תשלום
    - **אם יש תיקים משפטיים:** הסבר מה זה אומר
    - **אם עוסק פטור:** הסבר שאין חובת דיווח למס הכנסה - פחות שקיפות

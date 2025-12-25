@@ -39,6 +39,10 @@ import { searchLegalCases, type CourtSearchResult } from './courts_scraper';
 import { searchExecutionProceedings, type ExecutionSearchResult } from './execution_office';
 import { getTaxCertificatesWithCache, type CachedTaxCertificates } from './db/tax_certificates_cache';
 
+// NEW: Risk assessment for bookkeeping
+import { calculateBookkeepingRisk, type RiskFactors, type RiskAssessment } from './risk_calculator';
+import { fetchICAOwners, hasSingleOwner, hasOwnerDirector, calculateCompanyAge } from './scrapers/ica_owners';
+
 // Types for unified API
 export interface UnifiedBusinessData {
   // Basic Info (from PostgreSQL or scraping)
@@ -144,6 +148,21 @@ export interface UnifiedBusinessData {
     hasBankruptcyProceedings: boolean;  // NEW
     hasNoBookkeepingApproval: boolean;  // NEW: אין אישור ניהול ספרים
     hasLimitedWithholdingTaxApprovals: boolean;  // NEW: < 4 ניכוי מס approvals
+  };
+  
+  // NEW: Bookkeeping Risk Assessment (when exact data unavailable)
+  bookkeepingRisk?: {
+    score: number;  // 0-100
+    level: 'low' | 'medium' | 'high' | 'critical';
+    confidence: number;  // 0-100 (data completeness)
+    factors: Array<{
+      name: string;
+      impact: number;
+      severity: 'low' | 'medium' | 'high';
+      description: string;
+    }>;
+    recommendation: string;
+    calculatedAt: string;
   };
   
   // Metadata
@@ -375,6 +394,31 @@ function mapPostgreSQLToUnified(
   // Check for bankruptcy in court cases
   const hasBankruptcy = courtCases?.bankruptcyCases && courtCases.bankruptcyCases > 0;
   
+  // NEW: Calculate bookkeeping risk if no direct data available
+  let bookkeepingRiskAssessment: RiskAssessment | undefined;
+  
+  if (!taxCertificates || taxCertificates.bookkeepingApproval.status === 'לא ידוע') {
+    // Collect risk factors
+    const riskFactors: RiskFactors = {
+      violations: company.violations as any,
+      violationsCode: company.violationsCode || undefined,
+      companyStatus: company.status as any,
+      activeLegalCases: combinedActiveCase,
+      totalLegalCases: combinedCourtCases,
+      activeExecutionProceedings: combinedExecutionProcs,
+      totalDebt: combinedDebt,
+      hasRestrictedBankAccount: mugbalimResult?.isRestricted || false,
+    };
+    
+    // Add withholding tax issues if available
+    if (taxCertificates) {
+      riskFactors.hasWithholdingTaxIssues = countWithholdingTaxIssues(taxCertificates);
+    }
+    
+    // Calculate risk assessment
+    bookkeepingRiskAssessment = calculateBookkeepingRisk(riskFactors);
+  }
+  
   return {
     hpNumber: company.hpNumber,
     nameHebrew: company.nameHebrew,
@@ -475,6 +519,16 @@ function mapPostgreSQLToUnified(
       hasNoBookkeepingApproval: taxCertificates ? !taxCertificates.bookkeepingApproval.hasApproval : false,
       hasLimitedWithholdingTaxApprovals: taxCertificates ? countWithholdingTaxIssues(taxCertificates) >= 4 : false,
     },
+    
+    // NEW: Add risk assessment if calculated
+    bookkeepingRisk: bookkeepingRiskAssessment ? {
+      score: bookkeepingRiskAssessment.score,
+      level: bookkeepingRiskAssessment.level,
+      confidence: bookkeepingRiskAssessment.confidence,
+      factors: bookkeepingRiskAssessment.factors,
+      recommendation: bookkeepingRiskAssessment.recommendation,
+      calculatedAt: new Date().toISOString(),
+    } : undefined,
     
     dataSource: 'postgresql',
     dataQuality: company.dataQualityScore > 70 ? 'high' : company.dataQualityScore > 40 ? 'medium' : 'low',
