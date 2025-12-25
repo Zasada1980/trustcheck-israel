@@ -43,6 +43,12 @@ import { getTaxCertificatesWithCache, type CachedTaxCertificates } from './db/ta
 import { calculateBookkeepingRisk, type RiskFactors, type RiskAssessment } from './risk_calculator';
 import { fetchICAOwners, hasSingleOwner, hasOwnerDirector, calculateCompanyAge } from './scrapers/ica_owners';
 
+// NEW: VAT Dealer verification
+import { getVATDealerStatus, type VATDealerStatus } from './vat_dealer';
+
+// NEW: Osek Morsheh verification (individual businesses)
+import { getOsekMorsheh, classifyByHPNumber, type OsekMorsheh, type Classification } from './db/osek_morsheh';
+
 // Types for unified API
 export interface UnifiedBusinessData {
   // Basic Info (from PostgreSQL or scraping)
@@ -220,11 +226,25 @@ export async function getBusinessData(
           let courtCases: CourtSearchResult | null = null;
           let executionResult: ExecutionSearchResult | null = null;
           let taxCertificates: CachedTaxCertificates | null = null;
+          let vatDealerStatus: VATDealerStatus | null = null;  // NEW: VAT registration
+          let osekMorshehData: OsekMorsheh | null = null;  // NEW: Individual business (עוסק מורשה)
+          
+          // CRITICAL: Classify HP number first
+          const classification = classifyByHPNumber(parseInt(hpNumber));
+          console.log(`[UnifiedData] HP ${hpNumber} classified as: ${classification.database}`);
           
           if (options.includeAllSources) {
             console.log(`[UnifiedData] Fetching all free government sources...`);
             
-            [mugbalimResult, taxStatus, courtCases, executionResult, taxCertificates] = await Promise.all([
+            // Fetch osek_morsheh FIRST for non-company HPs
+            if (classification.database === 'osek_morsheh') {
+              osekMorshehData = await getOsekMorsheh(parseInt(hpNumber)).catch(err => {
+                console.warn(`[OsekMorsheh] Error:`, err.message);
+                return null;
+              });
+            }
+            
+            [mugbalimResult, taxStatus, courtCases, executionResult, taxCertificates, vatDealerStatus] = await Promise.all([
               checkMugbalimStatus(hpNumber).catch(err => {
                 console.warn(`[Mugbalim] Error:`, err.message);
                 return null;
@@ -245,6 +265,10 @@ export async function getBusinessData(
                 console.warn(`[TaxCertificates] Error:`, err.message);
                 return null;
               }),
+              getVATDealerStatus(hpNumber, { forceRefresh: options.forceRefresh }).catch(err => {
+                console.warn(`[VATDealer] Error:`, err.message);
+                return null;
+              }),
             ]);
           }
           
@@ -256,7 +280,9 @@ export async function getBusinessData(
             taxStatus,
             courtCases,
             executionResult,
-            taxCertificates
+            taxCertificates,
+            vatDealerStatus,  // NEW: Pass VAT dealer status
+            osekMorshehData   // NEW: Pass individual business data
           );
           
           await logScrapingOperation({
@@ -379,7 +405,9 @@ function mapPostgreSQLToUnified(
   taxStatus?: TaxStatus | null,
   courtCases?: CourtSearchResult | null,
   executionResult?: ExecutionSearchResult | null,
-  taxCertificates?: CachedTaxCertificates | null
+  taxCertificates?: CachedTaxCertificates | null,
+  vatDealer?: VATDealerStatus | null,  // NEW: VAT dealer status (companies)
+  osekMorsheh?: OsekMorsheh | null    // NEW: Individual business (עוסק מורשה)
 ): UnifiedBusinessData {
   
   const activeCases = legalCases.filter(c => c.caseStatus === 'פעיל').length;
@@ -458,14 +486,27 @@ function mapPostgreSQLToUnified(
       })),
     },
     
-    // NEW: Tax status from Tax Authority
-    taxStatus: taxStatus ? {
+    // NEW: Tax status from Tax Authority (osekMorsheh > vatDealer > taxStatus)
+    // Priority: Individual business database (osek_morsheh) has highest priority
+    taxStatus: osekMorsheh ? {
+      isMaamRegistered: osekMorsheh.is_vat_registered,  // עוסק מורשה
+      isMaamExempt: !osekMorsheh.is_vat_registered,     // עוסק פטור
+      maamNumber: osekMorsheh.vat_number,
+      hasNikuiBamakor: false,  // TODO: Add to osek_morsheh schema
+      lastVerified: osekMorsheh.last_verified_at.toISOString(),
+    } : (vatDealer ? {
+      isMaamRegistered: vatDealer.isVATRegistered,  // עוסק מורשה
+      isMaamExempt: !vatDealer.isVATRegistered,     // עוסק פטור
+      maamNumber: vatDealer.vatNumber,
+      hasNikuiBamakor: vatDealer.hasNikuiBamakor,
+      lastVerified: vatDealer.lastUpdated,
+    } : (taxStatus ? {
       isMaamRegistered: taxStatus.isMaamRegistered,
       isMaamExempt: taxStatus.isMaamExempt,
       maamNumber: taxStatus.maamNumber,
       hasNikuiBamakor: taxStatus.hasNikuiBamakor,
       lastVerified: taxStatus.lastVerified,
-    } : undefined,
+    } : undefined)),
     
     // NEW: Banking status from Bank of Israel
     bankingStatus: mugbalimResult ? {

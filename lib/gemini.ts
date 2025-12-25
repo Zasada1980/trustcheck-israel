@@ -96,9 +96,15 @@ function buildReportPrompt(data: CheckIDBusinessData): string {
   // NEW: Extract enhanced data from unified sources
   const hasRestrictedAccount = (data as any).bankingStatus?.hasRestrictedAccount;
   const isMaamRegistered = (data as any).taxStatus?.isMaamRegistered;
+  const isMaamExempt = (data as any).taxStatus?.isMaamExempt;
   const activeLegalCases = (data as any).legalIssues?.activeCases || 0;
   const totalDebt = (data as any).legalIssues?.totalDebt || 0;
   const hasBankruptcy = (data as any).riskIndicators?.hasBankruptcyProceedings;
+  
+  // NEW: Classify business type by HP number (עוסק מורשה vs חברה בע"מ)
+  const hpFirstDigit = data.registrationNumber?.toString().charAt(0);
+  const isCompany = hpFirstDigit === '5';  // חברה בע"מ
+  const isIndividualBusiness = hpFirstDigit && hpFirstDigit !== '5';  // עוסק מורשה/פטור
   
   // NEW: Tax certificates (ניהול ספרים + ניכוי מס במקור)
   const taxCertificates = (data as any).taxCertificates;
@@ -118,6 +124,7 @@ function buildReportPrompt(data: CheckIDBusinessData): string {
 שם העסק: ${data.name}
 ${data.registrationNumber ? `מספר רישום (ח.פ): ${data.registrationNumber}` : ''}
 ${data.type ? `סוג: ${data.type}` : ''}
+${isCompany ? '🏢 **חברה בע"מ** (מספר מתחיל ב-5)' : isIndividualBusiness ? '👤 **עסק פרטי** (עוסק מורשה/פטור)' : ''}
 ${data.status ? `סטטוס רישום: ${data.status}` : ''}
 ${data.foundedDate ? `תאריך הקמה: ${data.foundedDate}` : ''}
 ${addressStr ? `כתובת: ${addressStr}` : ''}
@@ -125,7 +132,9 @@ ${ownersStr ? `בעלים: ${ownersStr}` : ''}
 ${data.industry ? `תחום עיסוק: ${data.industry}` : ''}
 
 **מידע משפטי ופיננסי (ממקורות ממשלתיים):**
-${isMaamRegistered !== undefined ? `רישום מע"מ: ${isMaamRegistered ? '✅ עוסק מורשה' : '⚠️ עוסק פטור/לא רשום'}` : ''}
+${isIndividualBusiness && isMaamRegistered ? '✅ **עוסק מורשה במע"מ** - עסק רשום במס הכנסה, מדווח למס מע"מ' : ''}
+${isIndividualBusiness && isMaamExempt ? '⚠️ **עוסק פטור** - עסק קטן, לא חייב במע"מ, פחות שקיפות פיננסית' : ''}
+${isCompany && isMaamRegistered ? '✅ **רשום במע"מ** (חברה בע"מ עם דיווחי מס)' : ''}
 ${hasBookkeepingApproval !== undefined ? (hasBookkeepingApproval ? '✅ אישור ניהול ספרים תקין מרשות המיסים' : '❌ אין אישור ניהול ספרים (לא מנהל הנהלת חשבונות תקינה!)') : ''}
 ${withholdingTaxIssues > 0 ? `⚠️ אין אישור ניכוי מס במקור ב-${withholdingTaxIssues} קטגוריות` : ''}
 ${hasRiskAssessment ? `
@@ -156,20 +165,21 @@ ${data.strengths && data.strengths.length > 0 ? `נקודות חוזק: ${data.s
 
 2. **נקודות חוזק**:
    - מה טוב בעסק הזה (רישום תקין, אין חובות, וכו')
+   ${isIndividualBusiness && isMaamRegistered ? '- **עוסק מורשה:** עסק רשום במע"מ = דיווחי מס תקינים, יותר שקיפות' : ''}
+
 3. **נקודות חולשה/סיכונים**:
    - **אם יש חשבון בנק מוגבל:** הסבר שזה אומר 10+ שיקים חוזרים - סיכון מאוד גבוה!
    - **אם אין אישור ניהול ספרים:** הסבר שהעסק לא מנהל הנהלת חשבונות תקינה - פחות שקיפות, סיכון מס
    - **אם יש ציון סיכון גבוה (>70%):** הסבר שלפי ניתוח נתונים ממשלתיים - סבירות גבוהה לבעיות מס/רישום. ממליץ לבקש אישור ניהול ספרים במפורש!
    - **אם יש חובות הוצל"פ:** הסבר שהעסק לא משלם חובות - סיכון תשלום
    - **אם יש תיקים משפטיים:** הסבר מה זה אומר
-   - **אם עוסק פטור:** הסבר שאין חובת דיווח למס הכנסה - פחות שקיפות
-   - אזהרות אפשריות נוספות:** הסבר מה זה אומר
-   - **אם עוסק פטור:** הסבר שאין חובת דיווח למס הכנסה - פחות שקיפות
+   ${isIndividualBusiness && isMaamExempt ? '- **⚠️ עוסק פטור:** אין חובת דיווח למס הכנסה - פחות שקיפות פיננסית. עסק קטן (מחזור <100K ש"ח/שנה). **המלצה:** דרוש חשבונית ממילא!' : ''}
    - אזהרות אפשריות נוספות
 
 4. **המלצות להורים**:
    - האם כדאי לשלם לעסק הזה מראש
    - על מה לשאול לפני תשלום
+   ${isIndividualBusiness ? '- **עבור עוסק מורשה/פטור:** בקש תמיד חשבונית (גם אם פטור). בדוק ח.פ. בפועל (לא להסתפק בשם)' : ''}
    - איך להתגונן משרות/הונאות (למשל: דרוש חשבונית, חוזה בכתב, תשלום בהמחאות)
 
 5. **סיכום סופי**:
@@ -184,6 +194,7 @@ ${data.strengths && data.strengths.length > 0 ? `נקודות חוזק: ${data.s
 - עם אייקונים/אמוג׳י לנראות טובה יותר (✅ ⚠️ ❌ 🚨 ⭐)
 - עם ציון מספרי ברור (1-5 כוכבים)
 - **אם יש חשבון בנק מוגבל או פשיטת רגל - חובה להזהיר בצורה חדה!**
+- **אם עוסק פטור - הסבר שזה עסק קטן עם פחות שקיפות (אך לא בהכרח רע!)**
 
 התחל את הדוח עכשיו:
 `.trim();
