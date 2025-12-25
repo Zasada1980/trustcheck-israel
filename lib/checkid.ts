@@ -190,14 +190,16 @@ function mapCheckIDResponse(data: any): CheckIDBusinessData {
 /**
  * Mock данные для разработки (до интеграции с CheckID)
  * Генерирует реалистичные данные на основе query/HP number
+ * 
+ * CRITICAL FIX: Now accepts optional businessName to preserve user input
  */
-export function getMockBusinessData(query: string): CheckIDBusinessData {
+export function getMockBusinessData(query: string, businessName?: string): CheckIDBusinessData {
   // Определяем тип запроса
   const isHPNumber = /^\d{9}$/.test(query.trim());
   const hpNumber = isHPNumber ? query.trim() : generateRandomHP();
   
-  // Создаём реалистичные mock данные на основе HP number
-  const mockBusinesses = generateMockBusinessByHP(hpNumber, query);
+  // CRITICAL FIX: Pass businessName to preserve original user input
+  const mockBusinesses = generateMockBusinessByHP(hpNumber, query, businessName);
   
   return mockBusinesses;
 }
@@ -211,8 +213,10 @@ function generateRandomHP(): string {
 
 /**
  * Генерация реалистичных mock данных по HP number
+ * 
+ * CRITICAL FIX: Now accepts businessName parameter to use original user input as name
  */
-function generateMockBusinessByHP(hpNumber: string, originalQuery: string): CheckIDBusinessData {
+function generateMockBusinessByHP(hpNumber: string, originalQuery: string, businessName?: string): CheckIDBusinessData {
   // Используем последние цифры HP для вариации данных
   const lastDigit = parseInt(hpNumber.slice(-1));
   const seed = parseInt(hpNumber.slice(-3));
@@ -345,10 +349,15 @@ function generateMockBusinessByHP(hpNumber: string, originalQuery: string): Chec
   // Выбираем mock business на основе seed
   const selectedBusiness = businessTypes[seed % businessTypes.length];
   
-  // Если передан query (не HP) - используем его как name
-  const finalName = originalQuery !== hpNumber && originalQuery.length > 3 
-    ? originalQuery 
-    : selectedBusiness.name;
+  // CRITICAL FIX: Priority order for business name:
+  // 1. Explicitly passed businessName (from user input)
+  // 2. Original query if it's not HP number
+  // 3. Selected mock business name
+  const finalName = businessName && businessName.trim().length > 0
+    ? businessName
+    : (originalQuery !== hpNumber && originalQuery.length > 3 
+      ? originalQuery 
+      : selectedBusiness.name);
   
   return {
     name: finalName,

@@ -56,11 +56,11 @@ async function enrichCompaniesData(options: {
     const result = await pool.query(`
       SELECT 
         hp_number,
-        company_name,
+        name_hebrew,
         violations,
         violations_code,
-        company_status,
-        registration_date
+        status,
+        incorporation_date
       FROM companies_registry
       ${whereClause}
       ORDER BY hp_number
@@ -113,7 +113,7 @@ async function enrichSingleCompany(company: any, stats: EnrichmentStats): Promis
     // 1. Companies Registry data (already have it)
     riskFactors.violations = company.violations;
     riskFactors.violationsCode = company.violations_code;
-    riskFactors.companyStatus = company.company_status;
+    riskFactors.companyStatus = company.status;
     
     // 2. Fetch ICA ownership data
     const icaData = await fetchICAOwners(hpNumber);
@@ -124,40 +124,60 @@ async function enrichSingleCompany(company: any, stats: EnrichmentStats): Promis
       if (age !== null) riskFactors.companyAge = age;
     } else {
       // Fallback: calculate age from registry data
-      const age = calculateCompanyAge(company.registration_date);
+      const age = calculateCompanyAge(company.incorporation_date);
       if (age !== null) riskFactors.companyAge = age;
     }
     
-    // 3. Fetch legal cases count
-    const legalCasesResult = await pool.query(`
-      SELECT COUNT(*) as count
-      FROM legal_cases
-      WHERE hp_number = $1 AND status = 'active'
-    `, [hpNumber]);
-    riskFactors.activeLegalCases = parseInt(legalCasesResult.rows[0]?.count || '0');
+    // 3. Fetch legal cases count (skip if table doesn't exist)
+    let activeLegalCasesCount = 0;
+    try {
+      const legalCasesResult = await pool.query(`
+        SELECT COUNT(*) as count
+        FROM legal_cases
+        WHERE company_hp = $1 AND status = 'active'
+      `, [hpNumber]);
+      activeLegalCasesCount = parseInt(legalCasesResult.rows[0]?.count || '0');
+    } catch (err) {
+      // Table may not exist yet - skip
+    }
+    riskFactors.activeLegalCases = activeLegalCasesCount;
     
-    // 4. Fetch execution proceedings
-    const executionResult = await pool.query(`
-      SELECT 
-        COUNT(*) as count,
-        COALESCE(SUM(debt_amount), 0) as total_debt
-      FROM execution_proceedings
-      WHERE hp_number = $1 AND status = 'active'
-    `, [hpNumber]);
-    riskFactors.activeExecutionProceedings = parseInt(executionResult.rows[0]?.count || '0');
-    riskFactors.totalDebt = parseFloat(executionResult.rows[0]?.total_debt || '0');
+    // 4. Fetch execution proceedings (skip if table doesn't exist)
+    let activeExecutionProcs = 0;
+    let totalDebt = 0;
+    try {
+      const executionResult = await pool.query(`
+        SELECT 
+          COUNT(*) as count,
+          COALESCE(SUM(debt_amount), 0) as total_debt
+        FROM execution_proceedings
+        WHERE company_hp = $1 AND status = 'active'
+      `, [hpNumber]);
+      activeExecutionProcs = parseInt(executionResult.rows[0]?.count || '0');
+      totalDebt = parseFloat(executionResult.rows[0]?.total_debt || '0');
+    } catch (err) {
+      // Table may not exist yet - skip
+    }
+    riskFactors.activeExecutionProceedings = activeExecutionProcs;
+    riskFactors.totalDebt = totalDebt;
     
-    // 5. Check bank restrictions (from existing data)
-    const mugbalimResult = await pool.query(`
-      SELECT is_restricted
-      FROM boi_mugbalim_cache
-      WHERE hp_number = $1
-      ORDER BY last_updated DESC
-      LIMIT 1
-    `, [hpNumber]);
-    riskFactors.hasRestrictedBankAccount = mugbalimResult.rows[0]?.is_restricted || false;
+    // 5. Check bank restrictions (skip if table doesn't exist)
+    let hasRestricted = false;
+    try {
+      const mugbalimResult = await pool.query(`
+        SELECT is_restricted
+        FROM boi_mugbalim_cache
+        WHERE company_hp = $1
+        ORDER BY last_updated DESC
+        LIMIT 1
+      `, [hpNumber]);
+      hasRestricted = mugbalimResult.rows[0]?.is_restricted || false;
+    } catch (err) {
+      // Table may not exist yet - skip
+    }
+    riskFactors.hasRestrictedBankAccount = hasRestricted;
     
-    // 6. Check tax certificates (if cached)
+    // 6. Check tax certificates (skip if table doesn't exist)
     const taxCertResult = await pool.query(`
       SELECT withholding_tax_certificates
       FROM tax_certificates
@@ -253,9 +273,9 @@ async function main() {
     
     // Step 2: Run enrichment
     await enrichCompaniesData({
-      limit: 1000,      // Process 1000 companies
-      batchSize: 50,    // 50 companies per batch
-      onlyNew: true,    // Only companies without risk score
+      limit: undefined,  // Process ALL companies (no limit)
+      batchSize: 50,     // 50 companies per batch
+      onlyNew: true,     // Only companies without risk score
     });
     
   } catch (error) {

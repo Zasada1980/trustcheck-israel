@@ -34,6 +34,7 @@ export async function POST(req: NextRequest) {
       includeLegal: true,       // Include legal cases and execution proceedings
       forceRefresh: false,      // Use cache if available
       includeAllSources: true,  // NEW: Include Bank of Israel, Tax Authority, Courts, Execution Office
+      businessName,             // CRITICAL FIX: Pass original business name to preserve user input
     });
 
     if (!businessData) {

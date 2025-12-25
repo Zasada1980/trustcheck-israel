@@ -182,6 +182,7 @@ export async function getBusinessData(
     forceRefresh?: boolean;  // Force scraping even if cached
     includeLegal?: boolean;   // Include legal cases (slower)
     includeAllSources?: boolean;  // Include all CheckID-equivalent sources
+    businessName?: string;    // CRITICAL FIX: Original business name from user query
   } = {}
 ): Promise<UnifiedBusinessData | null> {
   
@@ -281,7 +282,8 @@ export async function getBusinessData(
     // Step 3: Fallback to mock data
     console.log(`[UnifiedData] Using MOCK data for HP ${hpNumber}`);
     
-    const mockData = getMockBusinessData(hpNumber);
+    // CRITICAL FIX: Pass original business name to preserve user input
+    const mockData = getMockBusinessData(hpNumber, options.businessName);
     
     if (!mockData) {
       return null;
