@@ -9,7 +9,7 @@
 import { Pool } from 'pg';
 import { pool } from './postgres';
 
-interface OsekMorsheh {
+export interface OsekMorsheh {
   hp_number: number;
   business_name: string;
   dealer_type: 'עוסק מורשה' | 'עוסק פטור';
@@ -30,13 +30,20 @@ interface OsekMorsheh {
   updated_at: Date;
 }
 
+export interface Classification {
+  dealerType: 'עוסק מורשה' | 'עוסק פטור' | 'חברה בע"מ';
+  database: 'osek_morsheh' | 'vat_dealers';
+  isVATRegistered: boolean;
+  requiresLookup: boolean;
+}
+
 /**
  * Validates that HP number does NOT start with 5
  * עוסק מורשה can start with ANY digit (0,1,2,3,4,6,7,8,9) EXCEPT "5"
  * HP starting with "5" are reserved for חברות בע"מ (companies)
  * @throws Error if HP starts with 5
  */
-function validateHPNotFive(hpNumber: number): void {
+export function validateHPNotFive(hpNumber: number): void {
   const hpStr = hpNumber.toString();
   if (hpStr.charAt(0) === '5') {
     throw new Error(
@@ -179,11 +186,7 @@ export async function getOsekStats(): Promise<{
  * 
  * @returns Business classification for unified_data.ts
  */
-export function classifyByHPNumber(hpNumber: number): {
-  dealerType: 'חברה בע"מ' | 'עוסק מורשה' | 'עוסק פטור';
-  isVATRegistered: boolean;
-  requiresLookup: boolean;
-} {
+export function classifyByHPNumber(hpNumber: number): Classification {
   const hpStr = hpNumber.toString();
   const firstDigit = hpStr.charAt(0);
   
@@ -191,6 +194,7 @@ export function classifyByHPNumber(hpNumber: number): {
     // HP starts with 5 → חברה בע"מ (Company)
     return {
       dealerType: 'חברה בע"מ',
+      database: 'vat_dealers',
       isVATRegistered: true,
       requiresLookup: false, // Can determine from HP alone
     };
@@ -199,6 +203,7 @@ export function classifyByHPNumber(hpNumber: number): {
     // Need to lookup in database to determine if עוסק מורשה or עוסק פטור
     return {
       dealerType: 'עוסק פטור', // Default assumption
+      database: 'osek_morsheh',
       isVATRegistered: false,
       requiresLookup: true, // Must check osek_morsheh table
     };
