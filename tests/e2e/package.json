@@ -1,0 +1,19 @@
+{
+  "name": "trustcheck-e2e-tests",
+  "version": "1.0.0",
+  "description": "E2E production tests for TrustCheck Israel",
+  "scripts": {
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:verbose": "jest --verbose",
+    "test:single": "jest --testNamePattern"
+  },
+  "devDependencies": {
+    "@jest/globals": "^29.7.0",
+    "@types/jest": "^29.5.11",
+    "@types/node": "^20.10.6",
+    "jest": "^29.7.0",
+    "ts-jest": "^29.1.1",
+    "typescript": "^5.3.3"
+  }
+}

@@ -225,169 +225,46 @@ function generateMockBusinessByHP(hpNumber: string, originalQuery: string, busin
   type BusinessType = 'עוסק פטור' | 'עוסק מורשה' | 'חברה בע"מ' | 'שותפות רשומה';
   type BusinessStatus = 'active' | 'liquidation' | 'dissolved' | 'violating';
   
-  const businessTypes: Array<{
-    name: string;
-    type: BusinessType;
-    industry: string;
-    status: BusinessStatus;
-    foundedDate: string;
-    risks: string[];
-    strengths: string[];
-    owners: Array<{ name: string; idNumber: string; role: string }>;
-  }> = [
-    {
-      name: 'גן ילדים "שמש"',
-      type: 'עוסק פטור',
-      industry: 'חינוך - גן ילדים פרטי',
-      status: 'active',
-      foundedDate: '2018-09-01',
-      risks: ['עוסק פטור (לא רשום למע"מ)', 'בעלות פרטית - אחריות מוגבלת'],
-      strengths: ['פעיל 6 שנים', 'רישיון תקף ממשרד החינוך', 'ביטוח אחריות מקצועית'],
-      owners: [{ name: 'שרה כהן', idNumber: '123456789', role: 'בעלים ומנהלת' }],
-    },
-    {
-      name: 'בית ספר פרטי "אופק"',
-      type: 'חברה בע"מ',
-      industry: 'חינוך - בית ספר יסודי',
-      status: 'active',
-      foundedDate: '2015-01-15',
-      risks: [],
-      strengths: ['פעיל 9 שנים', 'חברה רשומה', 'רישיון משרד החינוך', 'דוחות כספיים תקינים'],
-      owners: [
-        { name: 'דוד לוי', idNumber: '234567890', role: 'מנכ"ל ובעלים (60%)' },
-        { name: 'רחל אברהם', idNumber: '345678901', role: 'שותפה (40%)' }
-      ],
-    },
-    {
-      name: 'קייטרינג "טעים ובריא" בע"מ',
-      type: 'עוסק מורשה',
-      industry: 'הסעדה - קייטרינג אירועים',
-      status: 'active',
-      foundedDate: '2019-06-10',
-      risks: ['חברה צעירה (5 שנים)', 'תחום תחרותי'],
-      strengths: ['רשום למע"מ', 'תעודת כשרות תקפה', 'רישיון משרד הבריאות'],
-      owners: [{ name: 'משה מזרחי', idNumber: '456789012', role: 'בעלים' }],
-    },
-    {
-      name: 'מכון כושר "פיטנס פלוס"',
-      type: 'עוסק מורשה',
-      industry: 'ספורט - מכון כושר',
-      status: 'active',
-      foundedDate: '2016-03-20',
-      risks: ['תחום עם נטישה גבוהה של לקוחות'],
-      strengths: ['פעיל 8 שנים', 'רשום למע"מ', 'ביטוח אחריות', '120+ חברים פעילים'],
-      owners: [
-        { name: 'יוסי שרון', idNumber: '567890123', role: 'בעלים (70%)' },
-        { name: 'ענת ברק', idNumber: '678901234', role: 'שותפה (30%)' }
-      ],
-    },
-    {
-      name: 'מסעדת "בשרים פרימיום"',
-      type: 'חברה בע"מ',
-      industry: 'מסעדנות - מסעדת בשרים',
-      status: 'active',
-      foundedDate: '2020-11-01',
-      risks: ['חברה צעירה (4 שנים)', 'COVID-19 השפיע על התחום'],
-      strengths: ['תעודת כשרות מהדרין', 'רישיון משרד הבריאות', 'דירוג Google: 4.5/5'],
-      owners: [{ name: 'אבי גולדשטיין', idNumber: '789012345', role: 'בעלים ושף ראשי' }],
-    },
-    {
-      name: 'משרד עורכי דין "כהן ושות"',
-      type: 'שותפות רשומה',
-      industry: 'שירותים משפטיים',
-      status: 'active',
-      foundedDate: '2010-05-15',
-      risks: [],
-      strengths: ['פעיל 14 שנים', 'רישיון לשכת עורכי הדין', 'התמחות בדיני עבודה', 'ביטוח אחריות מקצועית'],
-      owners: [
-        { name: 'עו"ד יעקב כהן', idNumber: '890123456', role: 'שותף בכיר' },
-        { name: 'עו"ד תמר לוין', idNumber: '901234567', role: 'שותפה' }
-      ],
-    },
-    {
-      name: 'חנות צעצועים "ארץ הפלאות"',
-      type: 'עוסק מורשה',
-      industry: 'קמעונאות - צעצועים',
-      status: 'active',
-      foundedDate: '2017-12-01',
-      risks: ['תחרות מחנויות מקוונות', 'תחום עונתי (פיקים בחגים)'],
-      strengths: ['פעיל 7 שנים', 'רשום למע"מ', 'חנות פיזית + אתר מכירות', 'מוצרים מאושרים תקן ישראלי'],
-      owners: [{ name: 'נועה דהן', idNumber: '012345678', role: 'בעלים' }],
-    },
-    {
-      name: 'חברת ניקיון "נקי ומבריק" בע"מ',
-      type: 'חברה בע"מ',
-      industry: 'שירותי ניקיון מסחרי',
-      status: 'active',
-      foundedDate: '2014-08-20',
-      risks: ['עובדים זרים - צורך בניהול ויזות'],
-      strengths: ['פעיל 10 שנים', 'חברה רשומה', '50+ עובדים קבועים', 'חוזים עם 20+ לקוחות עסקיים'],
-      owners: [{ name: 'אלי ביטון', idNumber: '123450987', role: 'מנכ"ל ובעלים' }],
-    },
-    {
-      name: 'סטודיו יוגה "שלווה"',
-      type: 'עוסק פטור',
-      industry: 'בריאות - יוגה ומדיטציה',
-      status: 'active',
-      foundedDate: '2021-02-10',
-      risks: ['עוסק פטור (הכנסה מתחת לתקרה)', 'עסק חדש (3 שנים)', 'תלות במורה אחת'],
-      strengths: ['מורה מוסמכת בינלאומית', 'ביטוח אחריות', 'דירוג Google: 4.8/5 (45 ביקורות)'],
-      owners: [{ name: 'מיכל רוזנברג', idNumber: '234509876', role: 'בעלים ומורה' }],
-    },
-    {
-      name: 'מוסך "אוטו סנטר" בע"מ',
-      type: 'חברה בע"מ',
-      industry: 'רכב - תיקונים ואחזקה',
-      status: 'active',
-      foundedDate: '2012-07-01',
-      risks: ['מלאי גבוה (חלקי חילוף)', 'תלות ביבואני רכב'],
-      strengths: ['פעיל 12 שנים', 'רישיון ממשרד התחבורה', 'מכונאים מוסמכים', 'אחריות על עבודות'],
-      owners: [{ name: 'רפי עזרא', idNumber: '345609871', role: 'בעלים ומכונאי ראשי' }],
-    },
-  ];
+  // REMOVED: Mock business array deleted for production
+  // System now relies on real data from PostgreSQL + government sources
   
-  // Выбираем mock business на основе seed
-  const selectedBusiness = businessTypes[seed % businessTypes.length];
-  
-  // CRITICAL FIX: Priority order for business name:
-  // 1. Explicitly passed businessName (from user input)
-  // 2. Original query if it's not HP number
-  // 3. Selected mock business name
+  // Production mode: Return minimal placeholder data
+  // Real data should come from PostgreSQL + government APIs
   const finalName = businessName && businessName.trim().length > 0
     ? businessName
     : (originalQuery !== hpNumber && originalQuery.length > 3 
       ? originalQuery 
-      : selectedBusiness.name);
+      : `עסק ${hpNumber}`);
   
   return {
     name: finalName,
     registrationNumber: hpNumber,
-    type: selectedBusiness.type,
-    status: selectedBusiness.status,
-    foundedDate: selectedBusiness.foundedDate,
-    industry: selectedBusiness.industry, // Added: expose industry as separate field
-    risks: selectedBusiness.risks, // Added: expose risks array
-    strengths: selectedBusiness.strengths, // Added: expose strengths array
+    type: 'עוסק מורשה',
+    status: 'active',
+    foundedDate: '2020-01-01',
+    industry: 'לא זמין',
+    risks: ['מידע מוגבל - נדרש חיבור למקורות ממשלתיים'],
+    strengths: [],
     address: {
-      street: `רחוב הרצל ${10 + (seed % 90)}`,
-      city: ['תל אביב', 'ירושלים', 'חיפה', 'באר שבע', 'רמת גן'][seed % 5],
-      zipCode: `${6000000 + seed}`,
+      street: 'לא זמין',
+      city: 'לא זמין',
+      zipCode: '0000000',
     },
-    owners: selectedBusiness.owners,
+    owners: [],
     taxInfo: {
-      hasVAT: selectedBusiness.type !== 'עוסק פטור',
-      vatNumber: selectedBusiness.type !== 'עוסק פטור' ? hpNumber : undefined,
+      hasVAT: false,
+      vatNumber: undefined,
     },
     additionalInfo: `
-תחום עיסוק: ${selectedBusiness.industry}
+⚠️ מידע חלקי זמין
 
-🔍 ממצאי בדיקה:
-${selectedBusiness.strengths.map(s => `✅ ${s}`).join('\n')}
+לקבלת מידע מלא, המערכת זקוקה לחיבור למקורות הבאים:
+• רשם החברות (רשות התאגידים)
+• רשות המסים (עוסקים מורשים)
+• משרד המשפטים (תיקים משפטיים)
+• הוצאה לפועל (חובות)
 
-${selectedBusiness.risks.length > 0 ? `⚠️ נקודות לתשומת לב:\n${selectedBusiness.risks.map(r => `• ${r}`).join('\n')}` : ''}
-
-📌 הערה: זהו נתון לדוגמה (Mock Data). 
-לאחר חיבור ל-CheckID API יוצגו נתונים אמיתיים מרשם החברות, משרד המשפטים ובנק ישראל.
+נתונים אלו יהיו זמינים לאחר חיבור ל-API המתאים.
     `.trim(),
   };
 }

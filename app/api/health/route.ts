@@ -11,7 +11,7 @@ export async function GET() {
     uptime: process.uptime(),
     checks: {
       gemini: !!process.env.GOOGLE_API_KEY,
-      checkid: 'mock', // Using mock data in MVP
+      checkid: 'limited', // Production mode: Limited mock fallback (real data from PostgreSQL)
       app: true,
     },
   };
