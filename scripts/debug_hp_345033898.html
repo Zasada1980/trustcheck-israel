@@ -1,0 +1,491 @@
+<!DOCTYPE html><html lang="he" class="k-webkit k-webkit120"><head>
+    <script type="text/javascript" async="" src="https://www.google-analytics.com/analytics.js"></script><script type="text/javascript" async="" src="https://www.googletagmanager.com/gtag/js?id=G-XBS0438WRW&amp;cx=c&amp;gtm=4e5ca1"></script><script data-clsconfig="reportURI=https://report.justice.gbqofs.io/glassbox/reporting/ac319a47-ef79-2947-07b8-2721b805ae95/cls_report;recordScrolls=true;recordMouseMoves=true;domMaskContentByClass=cls_mask;ajaxRecordMetadata=always;ajaxRecordResponseHeaders=always;ajaxRecordResponseBody=always" id="_cls_detector" src="https://cdn2.gbqofs.com/justice/Full-P/detector-dom.min.js?rev=5.6.200SP1_B31" type="text/javascript"></script><script id="gbConfig" src="https://cdn2.gbqofs.com/justice/Full-P/config.js"></script>
+
+    <title>מידע ושרותים מקוונים - תאגידים ברשת (תאגידים ONLINE)</title>
+    <link href="/Content/MojImages/icons/favicon.ico" rel="shortcut icon" type="image/x-icon">
+    <meta name="viewport" content="width=device-width">
+    <meta http-equiv="X-UA-Compatible" content="IE=11; IE=EDGE">
+    <script src="/Common/MessageHandler.ashx"></script>
+
+    <script type="text/javascript">
+//<![CDATA[
+var __jsnlog_configure = function (JL) {
+JL.setOptions({"clientIP": "95.35.218.15, 10.231.0.4",
+"requestId": "a6a65e11-0dfc-4130-8cc5-89b6122e5e5a",
+"enabled": false,
+"maxMessages": 6000,
+"defaultAjaxUrl": "/Home/JSNlogError"});
+}; try { __jsnlog_configure(JL); } catch(e) {};
+//]]>
+</script>
+<script type="text/javascript" src="/Scripts/jsnlog.min.js"></script>
+
+    <script src="/bundles/jquery?v=JDrVMnR9g4-fVEUFpdQunIBKBzM11KuyX86zHldU7tc1"></script>
+
+    <script src="/bundles/jquery-ui?v=zwIzFgQ9AoOrm-hzcfwi3rTyM436sszgXyyv_eiBueM1"></script>
+
+    <script src="/bundles/jqueryval?v=rdkeU0rlrYylpSeuzGGcUuIWG5zGNzh62YNsxoub70I1"></script>
+
+    <script src="/bundles/bootstrap?v=KV7CuCBmF6LFAEPxzUCwAdYJNXXW5Nzrz9grx3-jXXk1"></script>
+
+    <script src="/bundles/kendo?v=GJvWtXs6E0RWzkdFh8BdfyOjwv_6pN5JMrdu-Ya_ncI1"></script><script id="_cls_detector" src="https://cdn2.gbqofs.com/justice/common/p/detector-bootstrap.min.js" type="module" data-clsconfig="reportURI=https://report.justice.gbqofs.io/glassbox/reporting/ac319a47-ef79-2947-07b8-2721b805ae95/cls_report;recordScrolls=true;recordMouseMoves=true;domMaskContentByClass=cls_mask;ajaxRecordMetadata=always;ajaxRecordResponseHeaders=always;ajaxRecordResponseBody=always"></script>
+
+
+<script type="text/javascript" src="/Common/Constants"></script>
+
+<script type="text/javascript" language="javascript">
+    var Version = '4.1.0';
+    var baseUrl = 'https://ica.justice.gov.il';
+    var logoutUrl = '/Login/Logout';
+
+    var logoutTimer = null;
+    var sessionTimer = null;
+    window.Enums = window.Enums || [];
+    //ObjectState
+    window.Enums.ObjectState = window.Enums.ObjectState || [];
+    window.Enums.ObjectState.Added = 2;
+    window.Enums.ObjectState.AddedString = 'Added';
+    window.Enums.ObjectState.Modified = 4;
+    window.Enums.ObjectState.Deleted = 8;
+
+    window.Enums.RequestTypes = window.Enums.RequestTypes || [];
+    window.Enums.RequestTypes.RestoredIncorporationCertificate = 91
+    window.Enums.RequestTypes.NameChangedCertificate = 92
+    window.Enums.RequestTypes.CompanyStatusConfirmation = 93
+    window.Enums.RequestTypes.LackOfDebitConfirmation = 94
+    window.Enums.RequestTypes.PartnerShipExtract = 118
+    window.Enums.RequestTypes.CompanyExtract = 32
+    window.Enums.RequestTypes.YearlyReport = 22
+    window.Enums.RequestTypes.RegisterCompanyCharitable = 35
+    window.Enums.RequestTypes.RegisterForeignCompanyCharitable = 36
+    window.Enums.RequestTypes.RegisterAssociation = 141
+
+    window.Enums.SubRequestTypes = window.Enums.SubRequestTypes || [];
+    window.Enums.SubRequestTypes.CompanyRegulationBuiltIn = 39
+
+    window.Enums.ShareHoldersLimitationTypes = window.Enums.ShareHoldersLimitationTypes || [];
+    window.Enums.ShareHoldersLimitationTypes.Other = 1
+
+    window.Enums.ContactTypes = window.Enums.ContactTypes || [];
+    window.Enums.ContactTypes.IsraeliCitizen =  1;
+    window.Enums.ContactTypes.Bank =  7;
+    window.Enums.ContactTypes.ForeignCorporation =  9;
+    window.Enums.ContactTypes.OtherCorporation =  11;
+    window.Enums.ContactTypes.ForeignResident =  2;
+    window.Enums.ContactTypes.UnRegisterCor =  8;
+    window.Enums.ContactTypes.Cooperative =  12;
+    window.Enums.ContactTypes.Charity =  6;
+    window.Enums.ContactTypes.Party =  10;
+    window.Enums.ContactTypes.Association =  4;
+    window.Enums.ContactTypes.Partnership =  5;
+    window.Enums.ContactTypes.Company =  3;
+
+    //AddressType
+    window.Enums.AddressTypes = window.Enums.AddressTypes || [];
+    window.Enums.AddressTypes.Local =  1;
+    window.Enums.AddressTypes.Abroad =  2;
+    window.Enums.AddressTypes.PostBox =  3;
+    window.Enums.AddressTypes.Any =  0;
+
+    window.Enums.ScreenSubject = window.Enums.ScreenSubject || [];
+    window.Enums.ScreenSubject.Other =  0;
+    window.Enums.ScreenSubject.Company =  2;
+    window.Enums.ScreenSubject.Request =  1;
+
+    window.Enums.ScreenType = window.Enums.ScreenType || [];
+    window.Enums.ScreenType.PrivateArea =  'PrivateArea';
+
+    window.Enums.UnitType = window.Enums.UnitType || [];
+    window.Enums.UnitType.Partnerships =  '10';
+    window.Enums.UnitType.Company = '8';
+
+    window.Enums.ContactToContactType = window.Enums.ContactToContactType || [];
+    window.Enums.ContactToContactType.InChargeOfReports = 8;
+    window.Enums.ContactToContactType.CEO = 5;
+    window.Enums.ContactToContactType.ReportingAppointee = 44;
+
+    window.Enums.ConnectDetailsType = window.Enums.ConnectDetailsType || [];
+    window.Enums.ConnectDetailsType.Mobile = 2;
+    window.Enums.ConnectDetailsType.Email = 4;
+
+    window.isPermittedToAddUnVerifiedAddress = false;
+
+
+    function isInternetExplorer() {
+        var ua = window.navigator.userAgent; //Check the userAgent property of the window.navigator object
+        var msie = ua.indexOf('MSIE '); // IE 10 or older
+        var trident = ua.indexOf('Trident/'); //IE 11
+        return (msie > 0 || trident > 0);
+    }
+
+    if (isInternetExplorer()) {
+        window.location.href = baseUrl + "/Home/UnsupportedBrowser";
+    }
+</script>
+
+
+
+    <script src="/bundles/Common?v=1ez8nVAunInZ8LIhpMdJ8sHMt1rP5_Vj4YKWrn2zUpA1"></script>
+
+    <script src="/bundles/IcaCommon?v=CRx2GjFqyL3Wp0txw2H-gEs8YNvQz7E9ltEQY_O3amE1"></script>
+
+    <script src="/Scripts/Globals/Globals?v=ViLe8xZ1MBn_FoYU696Vr_Sv33-rZ8G74B0mmN4uhp41"></script>
+
+    <link href="/Content/bootstrap/bootstrap/bootstrap?v=740QIeUVz1UxVp_lVZ5VKyWMk5Wyizig_dzaXDhArNs1" rel="stylesheet">
+
+    <link href="/Content/kendo/css?v=vE7qC4E4xCat6KUWu_V7vyGoTRBrwlEwqG71xJ8TYVg1" rel="stylesheet">
+
+    <link href="/Content/Common/css?v=Xt973LIR689Eaea-G35IsX2FUFb3YEypLZhuxogkaJk1" rel="stylesheet">
+
+    <link href="/Content/Ica/Ica?v=91TlyJYvJnh6ZRbPJQ6MoIRoX1PK1a_Sr0GQUr2G5b41" rel="stylesheet">
+
+    
+    <style>
+
+        @media print {
+            .open-menu {
+                display: none;
+            }
+        }
+
+        .main-nav-target#main-nav-guidlines {
+            display: none;
+        }
+
+        [data-target="#main-nav-guidlines"] {
+            display: none;
+        }
+
+        .moj-window-message-data {
+            padding-right: 45px;
+        }
+        .online-eng-new {
+            font-family: "segoe print";
+            font-size: 20px;
+            color: #1976d2;
+            font-weight: bold;
+        }
+
+        .online-eng {
+           display:none;
+        }
+        .ifram-chat {
+            position: fixed;
+            left: 200px;
+            display: none;
+            border: none;
+            top: 20%;
+            z-index: 99999;
+        }
+    </style>
+    <script type="text/javascript">
+        Moj.IsSupportBrowser(true, true);
+
+        if (self === top) {
+            var antiClickjack = document.getElementById("antiClickjack");
+            antiClickjack.parentNode.removeChild(antiClickjack);
+        } else {
+            top.location = self.location;
+        }
+    </script>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+
+    <script>
+        var id;
+        if (Moj.isTrue('False')) {
+            id = 'UA-28824637-52';
+        } else if (Moj.isTrue('False')) {
+            id = 'UA-28824637-20';
+        } else {
+            id = 'UA-28824637-23';
+        }
+        var script = document.createElement('script');
+        script.src = "https://www.googletagmanager.com/gtag/js?id=" + id;
+        script.async = false;
+        document.head.appendChild(script);
+
+        window.dataLayer = window.dataLayer || [];
+
+        function gtag() { dataLayer.push(arguments); }
+
+        gtag('js', new Date());
+        gtag('config', id);
+
+        /////////accessable session end//////////
+        if (Moj.isTrue('False')) {
+            ICA.extendSession(8);
+            ICA.stopExtendSession(30);
+            Moj.keepAlive(12);
+        }
+        /////////////////////////////////////////
+    </script><script src="https://www.googletagmanager.com/gtag/js?id=UA-28824637-23"></script>
+
+</head>
+<body class="padding0" style="font-size: 14px;">
+    <header>
+        
+        <div class="offscreen"><a href="#web-site-container" id="access-content">דילוג לתוכן העמוד</a></div>
+        <div class="accessible-bar">
+            <button href="javascript:void(0)" class="open-menu" aria-labelledby="תפריט נגישות">נגישות</button>
+            <button class="close"></button>
+            <div class="accessible-menu">
+                <div class="accessible-menu-wrap">
+                    <h2 class="title">תפריט נגישות</h2>
+                    <h3>קיצור דרך למשתמשי מקלדת</h3>
+                    <ul class="item-group"><li><a href="javascript:void(0)" onclick="document.getElementById('access-content').click();">דילוג לתוכן העמוד</a></li></ul>
+                    <h3>גודל גופן</h3>
+                    <ul class="item-group">
+                        <li><a href="javascript:void(0)" title="הגדלת גופן" aria-label="הגדלת גופן" onclick="Moj.changeDocFontSize(Moj.docFontSizeType.large);">גדול <bdo class="large-font">אA</bdo></a></li>
+                        <li><a href="javascript:void(0)" title="הצגת גודל גופן סטנדרטי" aria-label="הצגת גודל גופן סטנדרטי" onclick="Moj.changeDocFontSize(Moj.docFontSizeType.normal);">רגיל <bdo class="standart-font">אA</bdo></a></li>
+                        <li><a href="javascript:void(0)" title="הקטנת גופן" aria-label="הקטנת גופן" onclick="Moj.changeDocFontSize(Moj.docFontSizeType.small);">קטן <bdo class="smaller-font">אA</bdo></a></li>
+                    </ul>
+                    <h3>שונות</h3>
+                    <ul class="item-group">
+                        <li id="access-dec"><a href="http://content.justice.gov.il/accessibility/declaration1.html" target="_blank">הצהרת נגישות</a></li>
+                        <li><a href="javascript:void(0)" class="link-close">סגור תפריט נגישות</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="Production">
+            <div class="container">
+                <span class="app-environment">
+                    
+                </span>
+            </div>
+        </div>
+
+        <div class="web-site-header" role="contentinfo"><div class="head-content container"><div class="col-md site-logo"><span class="font-24 main-name">תאגידים ברשת <span class="online-eng-new">(תאגידים online)</span></span><span class="online-eng">Online</span><span class="main-eng-name">Israeli Corporations Authority</span><span class="sub-name">משרד המשפטים</span></div><div class="left-side"></div><script>Moj.addConstant('ApplicationType',0)</script></div></div>
+<nav class="navbar navbar-moj"><div class="container"><div class="navbar-header"><button type="button" class="navbar-toggle" data-toggle="offcanvas" data-target="#topNavbar"><div><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span></div><div class="menu-brand">תפריט</div></button></div><div class="sidebar-offcanvas" id="topNavbar"><div class="main-nav"><a data-target="#main-nav-menu">תפריט</a><a data-target="#main-nav-guidlines">הנחיות</a></div><div class="main-nav-target" id="main-nav-guidlines"></div><ul class="nav navbar-nav main-nav-target open" id="main-nav-menu" role="menubar"><li role="menuitem"><a data-href="/IcaSite" href="javascript:void(0)" onclick="Moj.generateRelativePath(this)">לדף הבית</a></li></ul></div></div><div class="sidenav-overlay"></div></nav>
+
+    </header>
+    <main role="main" id="web-site-container">
+        <div class="container">
+            
+            
+
+<div class="col-md-12 padding0">
+    
+
+    <ul class="web-site-container bread-crumbs">
+        <li><a href="/IcaSite">תאגידים ברשת (תאגידים ONLINE)</a></li>
+
+        <li><a>מידע ושרותים מקוונים</a></li>
+    </ul>
+
+</div>
+
+<div class="side-bar col-md-3 hidden-sm hidden-xs">
+
+
+<div class="bannersLeft">
+    <div class="bannerSupportTop">פניה לפי נושאים</div>
+    <div class="bannerSupport">
+        <div class="bannerSupportInside">
+            <p class="bold"><img alt="הפניה" width="18" height="15" src="/Content/MojImages/icons/arrow-up-right-from-square-regular.svg">לפנייה בנושא: <a class="link-text" href="https://ica.justice.gov.il/IcaSite/request/openRequest/222/0/0/8">חברות</a></p>
+            <p class="bold"><img alt="הפניה" width="18" height="15" src="/Content/MojImages/icons/arrow-up-right-from-square-regular.svg">לפנייה בנושא: <a class="link-text" href="https://ica.justice.gov.il/IcaSite/request/openRequest/167/0/0/9">עמותות וחל"צ</a></p>
+            <p class="bold"><img alt="הפניה" width="18" height="15" src="/Content/MojImages/icons/arrow-up-right-from-square-regular.svg">לפנייה בנושא: <a class="link-text" href="https://ica.justice.gov.il/IcaSite/request/openRequest/223/0/0/10">שותפויות</a></p>
+            <p class="bold"><img alt="דוא&quot;ל" width="18" height="18" src="/Content/MojImages/icons/envelope-regular.svg">לפנייה ישירה בנושא משכונות:<br> <a class="link-text" href="mailto:moked-mashkonot@justice.gov.il">moked-mashkonot@justice.gov.il</a></p>
+            <p class="bold"><img alt="הפניה" width="18" height="18" src="/Content/MojImages/icons/comments-regular.svg">פנו אלינו בצ'אט אנושי: <br><a class="link-text" style="cursor:pointer" onclick="showChatIframe(8)">בנושא חברות ושותפויות</a><br><a class="link-text" style="cursor:pointer" onclick="showChatIframe(11)">בנושא עמותות וחל"צ</a></p>
+            <p class="bold"><img alt="הפניה" width="18" height="18" src="/Content/MojImages/icons/whatsapp-brands-solid.svg">שוחחו איתנו ב WhatsApp: <br><a class="link-text" style="cursor:pointer" onclick="openWhatsApp('http://wa.me/972506117101')">בנושא חברות ושותפויות</a><br><a class="link-text" style="cursor:pointer" onclick="openWhatsApp('http://wa.me/972504043362')">בנושא עמותות וחל"צ</a></p>
+            <p class="bold"><img alt="טלפון" width="18" height="15" src="/Content/MojImages/icons/phone-regular.svg">פנו אלינו במוקד הטלפוני:<a class="link-text" href="tel:*5601">5601*</a></p>
+        </div>
+
+    </div><div class="bannerSupportEnd"></div>
+
+</div>
+
+<div id="pledge-browse-app" class="pledge-browse-app hide">
+
+    <a href="https://play.google.com/store/apps/details?id=govPayment.il" target="_blank"><h5>חדש - עיון במשכון במובייל</h5></a>
+    <p>
+        <a href="https://play.google.com/store/apps/details?id=govPayment.il" target="_blank">
+            ניתן לבצע עיון במשכון באמצעות
+            הישומון (אפליקצייה) של שרת
+            התשלומים של ממשל זמין, בנוסף לעיון באתר האינטרנט
+            ובעמדות השירות.
+        </a>
+    </p>
+</div>
+<div style="display:flex;flex:1;" class="hide">
+    <div style="display:flex;flex:1;flex-grow:1">
+        <img src="/Content/MojImages/lomda.jpg" alt="" id="lomda">
+    </div>
+</div>
+<br>
+
+<div id="guidelines">
+</div>
+<script>
+    $('#lomda').live("click",
+        function (e) {
+            window.open('http://dialogue-learning.co.il/corporationsSite/', '_blank');
+        });
+
+    function openWhatsApp(url) {
+        window.open(url, '_blank');
+    }
+
+    function showChatIframe(unit) {
+        var iframe = document.getElementById("chatIframe");
+        var iframeContentWindow = iframe.contentWindow;
+        var chatSubTitle = iframeContentWindow.document.getElementById('chat-sub-title');
+        var chatUrl = iframeContentWindow.document.getElementById("chat-url");
+        if (unit == 8) {
+            chatSubTitle.innerHTML = `<span>הצ'אט של יחידת החברות והשותפויות</span>`;
+            chatUrl.src = "https://justice-twenty.justice.gov.il/chat/icr/bot.aspx?l=104";
+        }
+        else if (unit == 11) {
+            chatSubTitle.innerHTML = `<span>הצ'אט של יחידת העמותות וחל"ץ</span>`;
+            chatUrl.src = "https://justice-twenty.justice.gov.il/chat//ICR/BOT.aspx?l=221";
+        }
+        var iframe = document.getElementById("chatIframe");
+        iframe.style.display = "block";
+    }
+
+
+</script>
+<style>
+    #lomda {
+        margin-top: 10px;
+        max-width: 100%;
+        max-height: 125px;
+        cursor: pointer;
+    }
+
+    .bannerSupportInside p {
+        margin-bottom: 0px !important;
+    }
+
+        .bannerSupportInside p.bold {
+            margin-top: 15px !important;
+        }
+
+    .bannersLeft {
+        width: 100%;
+        /* float: right; */
+        display: table;
+        direction: rtl;
+        padding-bottom: 5px;
+    }
+</style>
+    
+</div>
+<div class="main-content col-md-9">
+    <div id="main-content">
+        
+
+<script src="/Scripts/Common/CommonEvents.js?v-638989352020000000" type="text/javascript"></script><script src="/Scripts/ViewScripts/GenericCorporarionInfo/SearchCorporarion.js?v-638989352020000000" type="text/javascript"></script>
+
+
+<div class="moj-fixed" style="margin-bottom: 7px;">
+    <a class="link-text" href="https://www.guidestar.org.il/admin-info" target="_blank"><img width="860" src="/Content/MojImages/baner4.png"></a>
+    <div class="float-right margin-top10">
+
+        <h1 class="bold font-20 blue6">מידע ושרותים מקוונים</h1>
+        <div style="height:10px"></div>
+        <div class="col-sm-12 padding-top6"><span id=""><p>ניתן לחפש לפי מספר תאגיד או שם תאגיד. המידע כאמור, ניתן ללא עלות וכשירות לציבור. מידע זה עלול להיות חסר, בלתי מדויק או בלתי מעודכן.</p>
+        <p>
+            לבירור המידע והדיווחים שהוגשו לרשם החברות או לרשם השותפויות כנדרש בחוק, לרבות לעניין כתובת החברה/השותפות,
+            <a href="https://ica.justice.gov.il/Request/OpenRequest?rt=ExposeDocumentsCompany"><u>יש לעיין בתיק התאגיד</u></a> (שירות בתשלום)
+        </p></span></div>
+        <div style="height:50px"></div>
+    </div>
+</div>
+<div role="search"><form action="/" data-ajax="true" dataajaxsuccessdefault="" id="frmSearchCorporation" method="post" novalidate="novalidate">    <div id="GenericCorporationDiv" class="form-container-div">
+        <div id="SearchGenericCorporationContainer">
+            <div id="SearchCriteriasDiv" role="search">
+                <input data-val="true" data-val-number="שדה UnitsType חייב להיות מספר." data-val-required="UnitsType הוא שדה חובה." id="UnitsType" name="UnitsType" type="hidden" value="8">
+                <input data-val="true" data-val-number="שדה סוג תאגיד חייב להיות מספר." data-val-required="סוג תאגיד הוא שדה חובה." id="CorporationType" name="CorporationType" type="hidden" value="3">
+                <input data-val="true" data-val-number="שדה סוג זיהוי חייב להיות מספר." data-val-required="סוג זיהוי הוא שדה חובה." id="ContactType" name="ContactType" type="hidden" value="3">
+                <input data-val="true" data-val-extendedsecurity="לא תתאפשר הקלדת אותיות קטנות ותווים לא חוקיים" id="CorporationNameDisplayed" name="CorporationNameDisplayed" type="hidden" value="no">
+                <input data-val="true" data-val-number="שדה CorporationNumberDisplayed חייב להיות מספר." data-val-required="CorporationNumberDisplayed הוא שדה חובה." id="CorporationNumberDisplayed" name="CorporationNumberDisplayed" type="hidden" value="0">
+<div class="moj-grey-panel" id="panelSearchCorporation"><div class="moj-form-line"><div class="col-sm-2 col-txt txt-left" id="div_label_CorporationName"><label for="CorporationName">שם חברה</label></div><div class="col-sm-3" id="div_CorporationName"><input class="moj-input-txt form-control" data-val="true" data-val-customjsfunc="שדה שם תאגיד לא תקין" data-val-customjsfunc-javascriptfunction="Process.SearchCorporation.checkDuplicateSearch" data-val-extendedsecurity="לא תתאפשר הקלדת אותיות קטנות ותווים לא חוקיים" data-val-length="שם תאגיד חייב להיות מעל 3 תווים" data-val-length-max="50" data-val-length-min="3" id="CorporationName" maxlength="50" name="CorporationName" title="" type="text" value=""><span class="field-validation-valid" data-valmsg-for="CorporationName" data-valmsg-replace="true"></span></div><div class="col-sm-2 col-txt txt-left" id="div_label_CorporationNumber"><label for="CorporationNumber">מספר חברה</label></div><div class="col-sm-2" id="div_CorporationNumber"><input class="moj-input-txt form-control" data-val="true" data-val-is="תוצאות החיפוש כבר מוצגות" data-val-is-dependentproperty="CorporationNumberDisplayed" data-val-is-operator="NotEqualTo" data-val-is-passonnull="False" data-val-number="שדה מספר תאגיד חייב להיות מספר." data-val-range="מס' תאגיד אינו תקין: יש להזין מס' בן 9 ספרות שמתחיל ב 51-59" data-val-range-max="999999999" data-val-range-min="509999999" id="CorporationNumber" maxlength="9" name="CorporationNumber" title="" type="text" value=""><span class="field-validation-valid" data-valmsg-for="CorporationNumber" data-valmsg-replace="true"></span></div><div class="action-base col moj-button moj-action" id="div_btnSearchSearchCorporation1"><input id="btnSearchSearchCorporation1" type="button" value="אתר"><div class="offscreen" id="divAccessibleErrorMessages_btnSearchSearchCorporation1" role="alert"></div></div><input id="currentJSFunction" name="currentJSFunction" type="hidden" value=""></div></div>                <input data-val="true" data-val-number="שדה RateExposeDocuments חייב להיות מספר." data-val-required="RateExposeDocuments הוא שדה חובה." id="RateExposeDocuments" name="RateExposeDocuments" type="hidden" value="38.00">
+                <input data-val="true" data-val-number="שדה TollCodeExposeDocuments חייב להיות מספר." data-val-required="TollCodeExposeDocuments הוא שדה חובה." id="TollCodeExposeDocuments" name="TollCodeExposeDocuments" type="hidden" value="129">
+                <input data-val="true" data-val-number="שדה RateCompanyExtract חייב להיות מספר." data-val-required="RateCompanyExtract הוא שדה חובה." id="RateCompanyExtract" name="RateCompanyExtract" type="hidden" value="12.00">
+                <input data-val="true" data-val-number="שדה RateYearlyToll חייב להיות מספר." data-val-required="RateYearlyToll הוא שדה חובה." id="RateYearlyToll" name="RateYearlyToll" type="hidden" value="1734.00">
+            </div>
+            <div style="height:8px"></div>
+        </div>
+    </div>
+    <div id="divSearchCorporationResultList" style="margin-top: 15px; display: none;">
+        <h2 class="bold font-16 blue6" id="titleResult">תוצאות חיפוש</h2>
+
+
+
+<div id="divSearchGenericCorporarionInfo" style="margin-top: 15px">
+    <div class="k-widget k-grid k-display-block" id="grdGenericCorporationResultList-20dce3f1-e6c3-4fd0-ba53-9556b8528dc0" data-role="grid"><table caption="רשימת התאגידים שאותרו" role="treegrid" data-role="selectable" class="k-selectable"><colgroup><col class="k-hierarchy-col"><col style="width:70px"><col style="width:130px"><col style="width:60px"><col style="width:60px"><col style="width:50px"><col style="width:40px"></colgroup><thead class="k-grid-header" role="rowgroup"><tr role="row"><th class="k-hierarchy-cell k-header" scope="col">&nbsp;</th><th class="k-header k-filterable k-with-icon" data-field="DisplayId" data-index="0" data-title="מספר תאגיד" id="1636d59c-6b86-4911-990a-4cf619b504a3" scope="col" title="מספר זיהוי" data-role="columnsorter"><a aria-label="Filter" class="k-grid-filter" href="javascript:void(0)" tabindex="-1"><span class="k-icon k-i-filter" title="סינון"></span></a><a class="k-link" href="/GenericCorporarionInfo/SearchCorporation?unit=8&amp;corporationNumber=345033898&amp;grdGenericCorporationResultList-20dce3f1-e6c3-4fd0-ba53-9556b8528dc0-sort=DisplayId-asc" tabindex="0" title="מספר תאגיד">מספר תאגיד</a></th><th class="k-header k-filterable k-with-icon" data-field="DisplayName" data-index="1" data-title="שם בעברית" id="76edbda6-3de8-43f8-ac58-57cad6962190" scope="col" title="שם" data-role="columnsorter"><a aria-label="Filter" class="k-grid-filter" href="javascript:void(0)" tabindex="-1"><span class="k-icon k-i-filter" title="סינון"></span></a><a class="k-link" href="/GenericCorporarionInfo/SearchCorporation?unit=8&amp;corporationNumber=345033898&amp;grdGenericCorporationResultList-20dce3f1-e6c3-4fd0-ba53-9556b8528dc0-sort=DisplayName-asc" tabindex="0" title="שם בעברית">שם בעברית</a></th><th class="k-header td-hide" data-field="DisplayCompanyType" data-index="2" data-title="סוג חברה" id="69cc5bdb-b475-4ba7-8734-5e2e2b10b720" scope="col" title="DisplayCompanyType" data-role="columnsorter"><a class="k-link" href="/GenericCorporarionInfo/SearchCorporation?unit=8&amp;corporationNumber=345033898&amp;grdGenericCorporationResultList-20dce3f1-e6c3-4fd0-ba53-9556b8528dc0-sort=DisplayCompanyType-asc" tabindex="0" title="סוג חברה">סוג חברה</a></th><th class="k-header td-hide" data-field="StatusString" data-index="3" data-title="סטאטוס תאגיד" id="72153b55-bb5a-4208-afc2-0492d7b36187" scope="col" title="סטאטוס תאגיד" data-role="columnsorter"><a class="k-link" href="/GenericCorporarionInfo/SearchCorporation?unit=8&amp;corporationNumber=345033898&amp;grdGenericCorporationResultList-20dce3f1-e6c3-4fd0-ba53-9556b8528dc0-sort=StatusString-asc" tabindex="0" title="סטאטוס תאגיד">סטאטוס תאגיד</a></th><th class="k-header td-hide" data-field="DisplayCompanyViolates" data-index="4" data-title="מפרת חוק" id="04a7ac29-def5-41de-8093-4343cf884a7b" scope="col" title="DisplayCompanyViolates" data-role="columnsorter"><a class="k-link" href="/GenericCorporarionInfo/SearchCorporation?unit=8&amp;corporationNumber=345033898&amp;grdGenericCorporationResultList-20dce3f1-e6c3-4fd0-ba53-9556b8528dc0-sort=DisplayCompanyViolates-asc" tabindex="0" title="מפרת חוק">מפרת חוק</a></th><th class="k-header td-hide" data-field="LastYearlyReport" data-index="5" data-title="דוח שנתי" id="0abf1cbf-73dc-4da2-a613-ccd23a049cdf" scope="col" title="הדוח השנתי האחרון שהוגש מתייחס לשנת 2025" data-role="columnsorter"><a class="k-link" href="/GenericCorporarionInfo/SearchCorporation?unit=8&amp;corporationNumber=345033898&amp;grdGenericCorporationResultList-20dce3f1-e6c3-4fd0-ba53-9556b8528dc0-sort=LastYearlyReport-asc" tabindex="0" title="דוח שנתי">דוח שנתי</a></th><th class="k-header k-filterable k-with-icon" data-field="IsFirstExpand" data-index="6" data-title="IsFirstExpand" id="9f81bcfc-6423-4e21-b5da-813073ecd2c2" scope="col" style="display:none" title="IsFirstExpand" data-role="columnsorter"><a aria-label="Filter" class="k-grid-filter" href="javascript:void(0)" tabindex="-1"><span class="k-icon k-i-filter" title="סינון"></span></a><a class="k-link" href="/GenericCorporarionInfo/SearchCorporation?unit=8&amp;corporationNumber=345033898&amp;grdGenericCorporationResultList-20dce3f1-e6c3-4fd0-ba53-9556b8528dc0-sort=IsFirstExpand-asc" tabindex="0" title="IsFirstExpand">IsFirstExpand</a></th></tr></thead><tbody role="rowgroup"></tbody></table><div class="k-pager-wrap k-grid-pager k-widget k-floatwrap" data-role="pager"><h5 role="pager" class="offscreen">דפדוף</h5><a aria-label="לעמוד הראשון" class="k-link k-pager-nav k-state-disabled k-pager-first" data-page="1" href="#" title="לעמוד הראשון" tabindex="-1"><span class="k-icon k-i-arrow-end-left"></span></a><a aria-label="לעמוד הקודם" class="k-link k-pager-nav k-state-disabled" data-page="1" href="#" title="לעמוד הקודם" tabindex="-1"><span class="k-icon k-i-arrow-60-left"></span></a><ul class="k-pager-numbers k-reset"><li class="k-current-page"><span class="k-link k-pager-nav">0</span></li><li><span class="k-state-selected">0</span></li></ul><a aria-label="לעמוד הבא" class="k-link k-pager-nav k-state-disabled" data-page="0" href="#" title="לעמוד הבא" tabindex="-1"><span class="k-icon k-i-arrow-60-right"></span></a><a aria-label="לעמוד האחרון" class="k-link k-pager-nav k-state-disabled k-pager-last" data-page="0" href="#" title="לעמוד האחרון" tabindex="-1"><span class="k-icon k-i-arrow-end-right"></span></a><span class="k-pager-info k-label" aria-label="אין פריטים להצגה">אין פריטים להצגה</span></div></div><script>
+	kendo.syncReady(function(){jQuery("#grdGenericCorporationResultList-20dce3f1-e6c3-4fd0-ba53-9556b8528dc0").kendoGrid({"dataBound":Process.SearchCorporation.onDataBound,"detailExpand":Process.SearchCorporation.detailExpand,"columns":[{"title":"מספר תאגיד","attributes":{"id":"idCol"},"headerAttributes":{"title":"מספר זיהוי","data-field":"DisplayId","data-title":"מספר תאגיד","id":"1636d59c-6b86-4911-990a-4cf619b504a3"},"width":"70px","template":"# if (DisplayId==null) { #\u003cdiv class=\u0027moj-ellipsis\u0027\u003e\u003c/div\u003e#}else{#\u003cdiv class=\u0027moj-ellipsis\u0027 title=\"#=Moj.HtmlHelpers._htmlEscape(Moj.HtmlHelpers.toString(DisplayId, \u0027\u0027))#\"\u003e#=Moj.HtmlHelpers._htmlEscape(Moj.HtmlHelpers.toString(DisplayId, \u0027\u0027))#\u003c/div\u003e #}#","field":"DisplayId","filterable":{"operators":{"string":{"eq":"שווה","neq":"לא שווה","startswith":"מתחיל ב","endswith":"מסתיים ב","contains":"מכיל","doesnotcontain":"לא מכיל","isnull":"Is null","isnotnull":"Is not null","isempty":"Is empty","isnotempty":"Is not empty","isnullorempty":"Has no value","isnotnullorempty":"Has value"},"number":{"eq":"שווה","neq":"לא שווה","gte":"גדול או שווה","gt":"גדול מ","lte":"קטן או שווה","lt":"קטן מ","isnull":"Is null","isnotnull":"Is not null"},"date":{"eq":"שווה","neq":"לא שווה","gte":"אחרי או שווה","gt":"אחרי","lte":"לפני או שווה","lt":"לפני","isnull":"Is null","isnotnull":"Is not null"}}},"encoded":true},{"title":"שם בעברית","headerAttributes":{"title":"שם","data-field":"DisplayName","data-title":"שם בעברית","id":"76edbda6-3de8-43f8-ac58-57cad6962190"},"width":"130px","template":"# if (DisplayName==null) { #\u003cdiv class=\u0027moj-ellipsis\u0027\u003e\u003c/div\u003e#}else{#\u003cdiv class=\u0027moj-ellipsis\u0027 title=\"#=Moj.HtmlHelpers._htmlEscape(Moj.HtmlHelpers.toString(DisplayName, \u0027\u0027))#\"\u003e#=Moj.HtmlHelpers._htmlEscape(Moj.HtmlHelpers.toString(DisplayName, \u0027\u0027))#\u003c/div\u003e #}#","field":"DisplayName","filterable":{"operators":{"string":{"eq":"שווה","neq":"לא שווה","startswith":"מתחיל ב","endswith":"מסתיים ב","contains":"מכיל","doesnotcontain":"לא מכיל","isnull":"Is null","isnotnull":"Is not null","isempty":"Is empty","isnotempty":"Is not empty","isnullorempty":"Has no value","isnotnullorempty":"Has value"},"number":{"eq":"שווה","neq":"לא שווה","gte":"גדול או שווה","gt":"גדול מ","lte":"קטן או שווה","lt":"קטן מ","isnull":"Is null","isnotnull":"Is not null"},"date":{"eq":"שווה","neq":"לא שווה","gte":"אחרי או שווה","gt":"אחרי","lte":"לפני או שווה","lt":"לפני","isnull":"Is null","isnotnull":"Is not null"}}},"encoded":true},{"title":"סוג חברה","headerAttributes":{"title":"DisplayCompanyType","data-field":"DisplayCompanyType","data-title":"סוג חברה","id":"69cc5bdb-b475-4ba7-8734-5e2e2b10b720"},"width":"60px","template":"# if (DisplayCompanyType==null) { #\u003cdiv class=\u0027moj-ellipsis\u0027\u003e\u003c/div\u003e#}else{#\u003cdiv class=\u0027moj-ellipsis\u0027 title=\"#=Moj.HtmlHelpers._htmlEscape(Moj.HtmlHelpers.toString(DisplayCompanyType, \u0027\u0027))#\"\u003e#=Moj.HtmlHelpers._htmlEscape(Moj.HtmlHelpers.toString(DisplayCompanyType, \u0027\u0027))#\u003c/div\u003e #}#","field":"DisplayCompanyType","filterable":false,"encoded":true},{"title":"סטאטוס תאגיד","headerAttributes":{"title":"סטאטוס תאגיד","data-field":"StatusString","data-title":"סטאטוס תאגיד","id":"72153b55-bb5a-4208-afc2-0492d7b36187"},"width":"60px","template":"# if (StatusString==null) { #\u003cdiv class=\u0027moj-ellipsis\u0027\u003e\u003c/div\u003e#}else{#\u003cdiv class=\u0027moj-ellipsis\u0027 title=\"#=Moj.HtmlHelpers._htmlEscape(Moj.HtmlHelpers.toString(StatusString, \u0027\u0027))#\"\u003e#=Moj.HtmlHelpers._htmlEscape(Moj.HtmlHelpers.toString(StatusString, \u0027\u0027))#\u003c/div\u003e #}#","field":"StatusString","filterable":false,"encoded":true},{"title":"מפרת חוק","attributes":{"id":"violationCol"},"headerAttributes":{"title":"DisplayCompanyViolates","data-field":"DisplayCompanyViolates","data-title":"מפרת חוק","id":"04a7ac29-def5-41de-8093-4343cf884a7b"},"width":"50px","template":"# if (DisplayCompanyViolates==null) { #\u003cdiv class=\u0027moj-ellipsis\u0027\u003e\u003c/div\u003e#}else{#\u003cdiv class=\u0027moj-ellipsis\u0027 title=\"#=Moj.HtmlHelpers._htmlEscape(Moj.HtmlHelpers.toString(DisplayCompanyViolates, \u0027\u0027))#\"\u003e#=Moj.HtmlHelpers._htmlEscape(Moj.HtmlHelpers.toString(DisplayCompanyViolates, \u0027\u0027))#\u003c/div\u003e #}#","field":"DisplayCompanyViolates","filterable":false,"encoded":true},{"title":"דוח שנתי","headerAttributes":{"title":"הדוח השנתי האחרון שהוגש מתייחס לשנת 2025","data-field":"LastYearlyReport","data-title":"דוח שנתי","id":"0abf1cbf-73dc-4da2-a613-ccd23a049cdf"},"width":"40px","template":"# if (LastYearlyReport==null) { #\u003cdiv class=\u0027moj-ellipsis\u0027\u003e\u003c/div\u003e#}else{#\u003cdiv class=\u0027moj-ellipsis\u0027 title=\"#=Moj.HtmlHelpers._htmlEscape(Moj.HtmlHelpers.toString(LastYearlyReport, \u0027\u0027))#\"\u003e#=Moj.HtmlHelpers._htmlEscape(Moj.HtmlHelpers.toString(LastYearlyReport, \u0027\u0027))#\u003c/div\u003e #}#","field":"LastYearlyReport","filterable":false,"encoded":true},{"title":"IsFirstExpand","headerAttributes":{"title":"IsFirstExpand","data-field":"IsFirstExpand","data-title":"IsFirstExpand","id":"9f81bcfc-6423-4e21-b5da-813073ecd2c2"},"hidden":true,"template":"# if (IsFirstExpand==null) { #\u003cdiv class=\u0027moj-ellipsis\u0027\u003e\u003c/div\u003e#}else{#\u003cdiv class=\u0027moj-ellipsis\u0027 title=\"#=Moj.HtmlHelpers._htmlEscape(Moj.HtmlHelpers.toString(IsFirstExpand, \u0027\u0027))#\"\u003e#=Moj.HtmlHelpers._htmlEscape(Moj.HtmlHelpers.toString(IsFirstExpand, \u0027\u0027))#\u003c/div\u003e #}#","field":"IsFirstExpand","filterable":{"operators":{"string":{"eq":"שווה","neq":"לא שווה","startswith":"מתחיל ב","endswith":"מסתיים ב","contains":"מכיל","doesnotcontain":"לא מכיל","isnull":"Is null","isnotnull":"Is not null","isempty":"Is empty","isnotempty":"Is not empty","isnullorempty":"Has no value","isnotnullorempty":"Has value"},"number":{"eq":"שווה","neq":"לא שווה","gte":"גדול או שווה","gt":"גדול מ","lte":"קטן או שווה","lt":"קטן מ","isnull":"Is null","isnotnull":"Is not null"},"date":{"eq":"שווה","neq":"לא שווה","gte":"אחרי או שווה","gt":"אחרי","lte":"לפני או שווה","lt":"לפני","isnull":"Is null","isnotnull":"Is not null"}}},"encoded":true}],"pageable":{"buttonCount":10,"messages":{"display":"{0} - {1} מתוך {2} פריטים","empty":"אין פריטים להצגה","page":"עמוד","of":"מתוך {0}","itemsPerPage":"פריטים לעמוד","first":"לעמוד הראשון","previous":"לעמוד הקודם","next":"לעמוד הבא","last":"לעמוד האחרון","refresh":"ריענון"}},"sortable":true,"selectable":"Single, Row","filterable":{"messages":{"info":"ניתן להציג לפי הערכים הבאים:","isTrue":"כן","isFalse":"לא","filter":"סינון","clear":"ניקוי","and":"וגם","or":"או"},"operators":{"string":{"eq":"שווה","neq":"לא שווה","startswith":"מתחיל ב","endswith":"מסתיים ב","contains":"מכיל","doesnotcontain":"לא מכיל","isnull":"Is null","isnotnull":"Is not null","isempty":"Is empty","isnotempty":"Is not empty","isnullorempty":"Has no value","isnotnullorempty":"Has value"},"number":{"eq":"שווה","neq":"לא שווה","gte":"גדול או שווה","gt":"גדול מ","lte":"קטן או שווה","lt":"קטן מ","isnull":"Is null","isnotnull":"Is not null"},"date":{"eq":"שווה","neq":"לא שווה","gte":"אחרי או שווה","gt":"אחרי","lte":"לפני או שווה","lt":"לפני","isnull":"Is null","isnotnull":"Is not null"}}},"resizable":true,"scrollable":false,"messages":{"noRecords":"No records available."},"dataSource":{"type":(function(){if(kendo.data.transports['aspnetmvc-ajax']){return 'aspnetmvc-ajax';} else{throw new Error('The kendo.aspnetmvc.min.js script is not included.');}})(),"transport":{"read":{"url":""},"prefix":""},"pageSize":10,"page":1,"total":0,"schema":{"data":"Data","total":"Total","errors":"Errors","model":{"id":"ContactId","fields":{"RequestList":{"type":"object"},"IsFirstExpand":{"type":"boolean"},"Criterias":{"type":"object"},"RequestTypesList":{"type":"object"},"RequestStatusesList":{"type":"object"},"IsDocEnable":{"type":"boolean"},"IsLogin":{"type":"boolean"},"DisplayContactType":{"type":"string"},"DisplayId":{"type":"string"},"DisplayName":{"type":"string"},"DisplayEnglishName":{"type":"string"},"StatusString":{"type":"string"},"ContactId":{"type":"number","defaultValue":null},"RowGuid":{"type":"string"},"Address":{"type":"object"}}}},"data":{"Data":[],"Total":0,"AggregateResults":null}},"detailTemplate":kendo.template(jQuery('#genericCorporarionInfoClientTemplate').html())});});
+</script>
+</div>
+<script id="genericCorporarionInfoClientTemplate" type="text/x-kendo-template">
+    <div id="divCorporarionInfoDetails">
+        <input id="firstExpand" name="firstExpand" type="hidden" value="True" />
+        <input id="objDebts" name="objDebts" type="hidden" value="" />
+        <input id="ShohamReceiptReproduction" name="ShohamReceiptReproduction" type="hidden" value="https://ecom.gov.il/voucherspa/reproduction/411" />
+
+        <H3 class="font-16 orange2">פרטי תאגיד</H3>
+<div class="moj-form-line"><div class="col padding-top6 moj-bold" style="width: auto"><span id=''>שם בעברית: </span></div><div class="col-sm-4 padding-top6"><span id=''>#: DisplayName #</span></div></div>        <div class="moj-form-line"><div class="col padding-top6 moj-bold" style="width: auto"><span id=''>שם באנגלית: </span></div><div class="col-sm-3 padding-top6"><span id=''>#: DisplayEnglishName #</span></div></div>
+<div class="moj-form-line"><div class="col-sm-2 padding-top6 moj-bold"><span id=''>תאריך התאגדות: </span></div><div class="col-sm-7 padding-top6" id="div_RegistrationDate"><span id='RegistrationDate'>#: DisplayCompanyRegistrationDate #</span></div></div><div class="moj-form-line"><div class="col-sm-2 padding-top6 moj-bold col-xs-6"><span id=''>תת סטטוס: </span></div><div class="col-sm-7 padding-top6 col-xs-6"><span id=''>#: DisplayCompanySubStatus #</span></div></div><div class="moj-form-line"><div class="col-sm-2 padding-top6 moj-bold"><span id=''>תיאור חברה: </span></div><div class="col-sm-7 padding-top6"><span id=''>#: PurposeDescription #</span></div></div><div class="moj-form-line"><div class="col-sm-2 padding-top6 moj-bold"><span id=''>מטרת החברה: </span></div><div class="col-sm-7 padding-top6"><span id=''>#: DisplayCompanyPurpose #</span></div></div><div class="moj-form-line"><div class="col-sm-2 padding-top6 moj-bold col-xs-6"><span id=''>חברה ממשלתית: </span></div><div class="col-sm-1 padding-top6 col-xs-6"><span id=''>#: (IsGovernmental) ? 'כן' : 'לא' #</span></div><div class="col padding-top6 hidden-xs" style="width: auto"><span id=''> | </span></div><div class="col-sm-1 padding-top6 moj-bold col-xs-6"><span id=''>מגבלה: </span></div><div class="col-sm-1 padding-top6 col-xs-6"><span id=''>#: DisplayCompanyLimitType #</span></div></div>
+<div class="moj-form-line"><div class="col-sm-2 padding-top6 moj-bold col-xs-6"><span id=''>חובות אגרה : </span></div><div class="col-sm-1 padding-top6 col-xs-6" id="tollDebts"><span id=''></span></div><div class="col padding-top6 hidden-xs" style="width: auto"><span id=''> | </span></div><div class="col-sm-1 padding-top6 moj-bold col-xs-6" id="lblTollYearly"><span id=''>אגרת 2025 : </span></div><div class="col-sm-1 padding-top6 col-xs-6" id="tollYearly"><span id=''></span></div></div>
+        <div style="height:20px"></div>
+
+        # var addresses = Address; #
+        # if(addresses!=null) {#
+        <H3 class="font-16 orange2">כתובת</H3>
+<div class="moj-form-line"><div class="col-sm-1 padding-top6 moj-bold"><span id=''>יישוב: </span></div><div class="col padding-top6" style="width: auto"><span id=''>#: addresses.CityName #</span></div><div class="col padding-top6 hidden-xs" style="width: auto"><span id=''> | </span></div><div class="col-sm-1 padding-top6 moj-bold"><span id=''>רחוב: </span></div><div class="col padding-top6" style="width: auto"><span id=''>#: addresses.StreetName #</span></div><div class="col padding-top6 hidden-xs" style="width: auto"><span id=''> | </span></div><div class="col-sm-1 padding-top6 moj-bold"><span id=''>מספר: </span></div><div class="col padding-top6" style="width: auto"><span id=''>#: addresses.HouseNumber #</span></div><div class="col padding-top6 hidden-xs" style="width: auto"><span id=''> | </span></div><div class="col-sm-1 padding-top6 moj-bold"><span id=''>מיקוד: </span></div><div class="col padding-top6" style="width: auto"><span id=''>#: addresses.ZipCode #</span></div><div class="col padding-top6 hidden-xs" style="width: auto"><span id=''> | </span></div><div class="col-sm-1 padding-top6 moj-bold"><span id=''>ת.ד.: </span></div><div class="col padding-top6" style="width: auto"><span id=''>#: addresses.PostBox #</span></div><div class="col padding-top6 hidden-xs" style="width: auto"><span id=''> | </span></div><div class="col-sm-1 padding-top6 moj-bold"><span id=''>ארץ: </span></div><div class="col padding-top6" style="width: auto"><span id=''>#: addresses.CountryName #</span></div><div class="col padding-top6 hidden-xs" style="width: auto"><span id=''> | </span></div><div class="col-sm-1 padding-top6 moj-bold"><span id=''>אצל: </span></div><div class="col padding-top6" style="width: auto"><span id=''>#:addresses.AtAddress #</span></div></div>        #}#
+        <div style="height:20px"></div>
+        <H3 class="font-16 orange2">פעולות נוספות</H3>
+        <div style="height:7px"></div>
+        # var contactId = DisplayId; #
+        # var contactType = DisplayContactType; #
+        # var contactName = Moj.HtmlHelpers._htmlEscape(DisplayName);#
+        # var unitsType = 8; #
+        <div class="action-buttons-fro-cor">
+<div class="moj-form-line"><div class="col moj-button moj-action" id="div_statusInquiries"><input class="moj-action-button" id="statusInquiries" onClick="Process.SearchCorporation.PopupStatusInquiries(#: ContactId #,${contactId})" type="button" value="סטטוס פניות לרשם"></input><div class="offscreen" id="divAccessibleErrorMessages_statusInquiries" role="alert"></div></div><div class="col moj-button moj-action" id="div_btnPayingRetrievalMain"><input class="moj-action-button" id="btnPayingRetrievalMain" type="button" value="אחזור אישור תשלום"></input><div class="offscreen" id="divAccessibleErrorMessages_btnPayingRetrievalMain" role="alert"></div></div><div class="col moj-button moj-action" id="div_popupAmountsPayment"><input class="moj-action-button" id="popupAmountsPayment" onClick="Process.SearchCorporation.PopupAmountsForPayment(${contactId},'${contactName}','${contactType}')" type="button" value="סכומים לתשלום"></input><div class="offscreen" id="divAccessibleErrorMessages_popupAmountsPayment" role="alert"></div></div></div>            <div style="height:12px"></div>
+
+<div class="moj-form-line"><div class="col moj-button moj-action" id="div_orderDocuemts"><input class="moj-action-button" id="orderDocuemts" onClick="Process.SearchCorporation.OrderDocuemts(#: ContactId #,'${unitsType}')" type="button" value="הזמנת מסמכים"></input><div class="offscreen" id="divAccessibleErrorMessages_orderDocuemts" role="alert"></div></div><div class="col moj-button moj-action" id="div_companyExtract"><input aria-lablledby="msg5422" class="moj-action-button" id="companyExtract" onClick="Process.SearchCorporation.ExecuteCompanyExtract(${contactId},${unitsType})" type="button" value="הפקת נסח חברה"></input><div class="offscreen" id="divAccessibleErrorMessages_companyExtract" role="alert"></div></div><div class="small help" id="msg5422" tabindex="0"><div class="help-txt">הפקת נסח כרוכה בעלות של 12.00 ש"ח</div></div><div class="col moj-button moj-action" id="div_docExpose"><input aria-lablledby="msg5421" class="moj-action-button" id="docExpose" onClick="Process.SearchCorporation.ExecuteDocumentExpose()" type="button" value="הזמנת תיק"></input><div class="offscreen" id="divAccessibleErrorMessages_docExpose" role="alert"></div></div><div class="small help" id="msg5421" tabindex="0"><div class="help-txt">הזמנת תיק כרוכה בעלות של 38.00 ש"ח. ההזמנה כוללת רק מסמכים שנסרקו. ההזמנה תסופק כקובץ זיפ (ZIP) באמצעות הדוא"ל. יש לוודא שהתוכנה מותקנת במחשב.     <br /><a href=http://www.justice.gov.il/Units/RasutHataagidim/units/RashamHachvarot/Pages/OnlineOrderExplation.aspx>להסבר על תהליך ההזמנה</a>.      <br />
+<a href=http://havarot.justice.gov.il/resources/usermanualexposure.pdf>להסבר על תכולת ההזמנה</a></div></div></div>        </div>
+
+        <div style="height:30px"></div>
+    </div>
+</script>
+        <div style="height:170px"></div>
+    </div>
+    <div id="divNoResult" style="margin-top: 15px; display: none;">
+        <h2 class="bold font-16 blue6">לא נמצאו תוצאות לחיפוש המבוקש</h2>
+    </div>
+    <a class="link-text" href="https://www.gov.il/he/departments/topics/registrar_of_companies/govil-landing-page" target="_blank">
+        <img style="margin-left: 5px; margin-top: 83px" width="860" src="/Content/MojImages/baner.jpg"></a>
+</form></div>
+    </div>
+</div>
+
+
+
+                <iframe src="/chat.html" id="chatIframe" height="700" width="400" class="ifram-chat"></iframe>
+          
+          
+        </div>
+    </main>
+    <div id="div_overlay" class="hide">
+    </div>
+<footer class="footer-bottom" role="contentinfo"><div class="sticky-alert"><i class="glyphicon glyphicon-remove-circle" onclick="(function(){$('.sticky-alert').addClass('hide')})();"></i><div class="alert-text">לתשומת ליבך, הפעולות המבוצעות על ידך באתר נשמרות לצורך בקרת איכות ושיפור השירות לאזרח.</div></div><div class="container"><div class="row"><div class="col-md-7 ftrLnks"><ul><li><a target="_blank" title="משרד המשפטים" href="http://index.justice.gov.il/">לאתר משרד המשפטים</a></li><li>|</li><li><a target="_blank" title="אתר רשות התאגידים" href="https://www.gov.il/he/departments/israeli_corporations_authority/govil-landing-page">אתר רשות התאגידים</a></li><li>|</li><li><a target="_blank" title="אתר רשם החברות" href="https://www.gov.il/he/departments/topics/registrar_of_companies/govil-landing-page">אתר רשם החברות</a></li><li>|</li><li><a target="_blank" title="יצירת קשר" href="https://www.facebook.com/Taagidim/?locale=he_IL">יצירת קשר</a></li></ul></div><div class="col-md-5 copy">כל הזכויות שמורות 2025 משרד המשפטים ©&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; מספר גירסה: 4.1.0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; דפדפן: <script>document.write(getBrowserVersion());</script>Chrome 120</div></div></div></footer>
+<script>
+    $(document).ready(function () {
+        MojFind('.log-out').click(function () {
+            Process.Login.logOutClick();
+        });
+    });
+   
+    function hideIframeChat() {
+        var iframe = document.getElementById("chatIframe");
+        iframe.style.display = "none";
+    }
+</script>
+
+
+
+
+</body></html>

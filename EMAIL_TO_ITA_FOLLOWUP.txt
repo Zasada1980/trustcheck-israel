@@ -1,0 +1,171 @@
+TO: APIsupport@taxes.gov.il
+SUBJECT: Follow-up: Open API Access Request - TrustCheck Israel (HP 345033898)
+
+Shalom,
+
+I submitted an Open API access request on **December 25, 2025** for TrustCheck Israel 
+(HP: 345033898). I wanted to follow up and confirm receipt of my application.
+
+═══════════════════════════════════════════════════════════════════
+
+📋 ORIGINAL REQUEST SUMMARY:
+
+- **Company:** TrustCheck Israel (עוסק מורשה)
+- **HP Number:** 345033898
+- **Service:** Business verification platform for Israeli parents
+- **Requested APIs:**
+  1. Osek Murshe Registry (verification by HP number)
+  2. Ishur Nihul Sfarim (bookkeeping approval certificates)
+  3. Nikui Mas B'Makor (withholding tax status)
+  4. Israel Invoice Allocation Number verification
+
+═══════════════════════════════════════════════════════════════════
+
+❓ QUESTIONS:
+
+1. **Was my request received?** 
+   - Is there a reference/ticket number I can track?
+
+2. **What are the next steps?**
+   - Do I need to submit additional forms?
+   - Form 130525 (Software House Registration) - should I submit it separately?
+
+3. **Smart Card requirement:**
+   - Which provider do you recommend: Comsign or PersonalID?
+   - Can I purchase Smart Card before API approval, or should I wait?
+
+4. **Estimated timeline:**
+   - When can I expect Sandbox access?
+   - When is Production access typically granted after testing?
+
+5. **Data Security Appendix:**
+   - Will you send this document by email, or do I download it from the portal?
+   - Should it be signed digitally or physically?
+
+6. **Technical contact:**
+   - Is there a developer documentation portal I can access now to prepare?
+   - Are there code examples in Python/Node.js/TypeScript?
+
+═══════════════════════════════════════════════════════════════════
+
+🎯 OUR USE CASE:
+
+We are building a **B2C platform** (trustcheck.co.il) to help Israeli parents verify 
+businesses before making payments. Example: Parent wants to enroll child in private 
+kindergarten - they search HP number on our site to see:
+- Is business registered with Tax Authority?
+- Does it have Ishur Nihul Sfarim (bookkeeping approval)?
+- Are there court cases or tax debts?
+
+This helps prevent fraud and protects families from financial losses.
+
+We are NOT a competitor to Tax Authority services - we are creating a parent-friendly 
+interface to PUBLIC data, with Hebrew explanations and AI-powered trust reports.
+
+═══════════════════════════════════════════════════════════════════
+
+⚠️ IMPORTANT: Israel Invoice Compliance
+
+I understand from recent research that Israel Invoice Allocation Number system is 
+already operational (since May 5, 2024). We plan to integrate this API to help our 
+B2B clients comply with mandatory e-invoicing requirements.
+
+This is critical for businesses issuing invoices >25,000 ₪ (threshold decreasing 
+yearly). Our platform will:
+1. Help suppliers request Allocation Numbers before issuing invoices
+2. Help buyers validate Allocation Numbers received on invoices
+
+This is a **compliance feature**, not a commercial data product.
+
+═══════════════════════════════════════════════════════════════════
+
+📞 CONTACT INFORMATION:
+
+**Company Details:**
+- Name: TrustCheck Israel
+- HP: 345033898 (עוסק מורשה)
+- Address: [YOUR BUSINESS ADDRESS]
+- Website: trustcheck.co.il (under development)
+
+**Primary Contact:**
+- Name: [YOUR NAME]
+- Title: Founder & Developer
+- Email: [YOUR EMAIL]
+- Phone: [YOUR ISRAELI PHONE NUMBER]
+- Preferred contact: Email (I check daily)
+
+**Technical Contact (same person):**
+- Stack: Next.js 14, PostgreSQL, Docker
+- Hosting: Hetzner Cloud (EU - Germany)
+- Expected API volume: 1,000-2,000 requests/month initially
+
+═══════════════════════════════════════════════════════════════════
+
+🙏 REQUEST:
+
+If possible, could you please provide an **estimated response timeline**? 
+
+I want to plan our development roadmap accordingly:
+- If API access is 2-4 weeks → we will integrate commercial data providers (D&B) as interim solution
+- If API access is 6-8 weeks → we will launch with mock data and migrate to real API later
+
+Either way is fine - I just need to know so I can inform our Beta testers and plan properly.
+
+═══════════════════════════════════════════════════════════════════
+
+Thank you for your time and support. I look forward to working with Israel Tax Authority 
+to build a more transparent and trustworthy business ecosystem in Israel.
+
+Best regards,
+[YOUR NAME]
+Founder, TrustCheck Israel
+HP: 345033898
+Email: [YOUR EMAIL]
+Phone: [YOUR PHONE]
+
+---
+HEBREW VERSION (אם צריך לשלוח בעברית):
+
+שלום,
+
+שלחתי בקשה לגישה ל-Open API ב-25 בדצמבר 2025 עבור TrustCheck Israel (ח.פ. 345033898).
+
+אשמח לאשר שהבקשה התקבלה ולדעת מה השלבים הבאים:
+
+1. האם יש מספר אסמכתא למעקב?
+2. האם צריך למלא טופס 130525 בנפרד?
+3. Smart Card - איזה ספק מומלץ?
+4. כמה זמן בדרך כלל עד גישת Sandbox?
+5. איפה אפשר להוריד את נספח אבטחת המידע?
+
+אנחנו בונים פלטפורמה B2C כדי לעזור להורים לבדוק עסקים לפני תשלום (גנים פרטיים, מורים פרטיים).
+נצטרך גישה ל:
+- רישום עוסק מורשה
+- אישור ניהול ספרים
+- ניכוי מס במקור
+- אימות מספר הקצאה (Israel Invoice)
+
+זה לא מוצר מסחרי של נתונים - זה כלי compliance וממשק ידידותי להורים.
+
+תודה רבה,
+[YOUR NAME]
+TrustCheck Israel
+ח.פ. 345033898
+
+---
+РУССКАЯ ВЕРСИЯ (для твоей подготовки):
+
+Отправил запрос на API 25.12.2025. Хочу подтвердить получение и узнать:
+
+1. Номер заявки для отслеживания?
+2. Нужно ли отдельно форму 130525?
+3. Smart Card - Comsign или PersonalID?
+4. Сроки Sandbox и Production доступа?
+5. Где взять Data Security Appendix?
+
+Мы делаем платформу для родителей - проверка бизнесов перед оплатой.
+Нужны API: Osek Murshe, Ishur Nihul Sfarim, Israel Invoice.
+
+Это не коммерция - это compliance tool для защиты семей от мошенников.
+
+Планирование: если API через 2-4 недели → ждём, если 6-8 → подключаем D&B временно.

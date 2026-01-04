@@ -1,0 +1,179 @@
+═══════════════════════════════════════════════════════════════════
+CLOUDFLARE NAMESERVERS FOR TRUSTCHECK.CO.IL
+═══════════════════════════════════════════════════════════════════
+
+Your assigned nameservers:
+
+1. jihoon.ns.cloudflare.com
+2. molly.ns.cloudflare.com
+
+═══════════════════════════════════════════════════════════════════
+STEP-BY-STEP: Change Nameservers at Registrar
+═══════════════════════════════════════════════════════════════════
+
+STEP 1: Find out where you bought the domain
+──────────────────────────────────────────────
+
+Option A: Check ICANN Whois
+→ Go to: https://lookup.icann.org/en/lookup
+→ Enter: trustcheck.co.il
+→ Look for "Registrar" field
+
+Common Israeli registrars:
+- domains.co.il (Isoc Internet Services)
+- RealHost
+- 012 Domains
+- Namecheap
+- GoDaddy
+
+Option B: Check your email
+→ Search inbox for: "trustcheck.co.il" + "registration" or "purchase"
+→ Look for confirmation email from registrar
+
+───────────────────────────────────────────────────────────────────
+STEP 2: Login to Registrar Account
+───────────────────────────────────────────────────────────────────
+
+Example URLs:
+- domains.co.il: https://domains.co.il/login
+- Namecheap: https://namecheap.com/myaccount/login
+- GoDaddy: https://sso.godaddy.com/
+
+Login with:
+- Email + Password
+- OR Username + Password
+
+───────────────────────────────────────────────────────────────────
+STEP 3: Find Domain Management Section
+───────────────────────────────────────────────────────────────────
+
+Look for:
+- "My Domains" or "Domain List"
+- Click on "trustcheck.co.il"
+
+Then find section called:
+- "Nameservers" or
+- "DNS Management" or
+- "Name Servers" or
+- "DNS Settings"
+
+───────────────────────────────────────────────────────────────────
+STEP 4: Turn OFF DNSSEC (if enabled)
+───────────────────────────────────────────────────────────────────
+
+CRITICAL: DNSSEC must be OFF before changing nameservers!
+
+Look for:
+- "DNSSEC" toggle
+- "DNS Security" option
+- "Domain Security" settings
+
+If enabled → Click "Disable" or "Turn Off"
+
+Why? Cloudflare will manage DNSSEC later (can re-enable through Cloudflare)
+
+───────────────────────────────────────────────────────────────────
+STEP 5: Replace Nameservers
+───────────────────────────────────────────────────────────────────
+
+Current nameservers (probably something like):
+❌ ns1.domains.co.il
+❌ ns2.domains.co.il
+❌ ns1.registrar.com
+❌ ns2.registrar.com
+
+Delete ALL old nameservers!
+
+Add NEW Cloudflare nameservers:
+✅ jihoon.ns.cloudflare.com
+✅ molly.ns.cloudflare.com
+
+Important:
+- Copy-paste exactly (no typos!)
+- Order doesn't matter
+- Make sure there are NO old nameservers left
+
+───────────────────────────────────────────────────────────────────
+STEP 6: Save Changes
+───────────────────────────────────────────────────────────────────
+
+Click:
+- "Save" or
+- "Update Nameservers" or
+- "Apply Changes" or
+- "Confirm"
+
+You may see warning:
+"Changes may take up to 24-48 hours to propagate"
+
+Reality: Usually takes 15 minutes - 2 hours
+
+───────────────────────────────────────────────────────────────────
+STEP 7: Return to Cloudflare
+───────────────────────────────────────────────────────────────────
+
+After saving at registrar:
+
+1. Go back to Cloudflare Dashboard
+2. Click "Done, check nameservers" button
+3. Cloudflare will check every 5 minutes automatically
+
+You'll see message:
+"Waiting for nameserver update... We'll check again shortly"
+
+───────────────────────────────────────────────────────────────────
+STEP 8: Wait for Activation (15 min - 2 hours)
+───────────────────────────────────────────────────────────────────
+
+While waiting, you can:
+- Close browser (Cloudflare checks automatically)
+- You'll get email when activated:
+  "trustcheck.co.il is now active on Cloudflare"
+
+Check status anytime:
+→ Cloudflare Dashboard → Overview
+→ Look for: "Status: Active" (green checkmark)
+
+───────────────────────────────────────────────────────────────────
+VERIFICATION COMMANDS (PowerShell)
+───────────────────────────────────────────────────────────────────
+
+After 15-30 minutes, check if nameservers changed:
+
+nslookup -type=NS trustcheck.co.il
+
+Expected output:
+trustcheck.co.il        nameserver = jihoon.ns.cloudflare.com
+trustcheck.co.il        nameserver = molly.ns.cloudflare.com
+
+If you still see old nameservers → wait another 30 minutes
+
+───────────────────────────────────────────────────────────────────
+TROUBLESHOOTING
+───────────────────────────────────────────────────────────────────
+
+Problem: Can't find "Nameservers" section at registrar
+Solution: Look for "DNS Management" → "Advanced DNS" → "Custom Nameservers"
+
+Problem: Registrar says "DNSSEC must be off first"
+Solution: Find DNSSEC toggle → Disable → Wait 5 minutes → Try again
+
+Problem: Registrar requires 2FA/SMS verification
+Solution: Enter code from SMS → Continue
+
+Problem: Forgot registrar password
+Solution: Click "Forgot Password" → Reset via email
+
+Problem: Domain locked (Transfer Lock)
+Solution: This is OK - you're NOT transferring, just changing nameservers
+
+───────────────────────────────────────────────────────────────────
+NEXT STEP (After Cloudflare activates)
+───────────────────────────────────────────────────────────────────
+
+When you get "Active" status:
+1. Configure SSL/TLS settings in Cloudflare
+2. Update Nginx on server for HTTPS
+3. Test https://trustcheck.co.il
+
+═══════════════════════════════════════════════════════════════════

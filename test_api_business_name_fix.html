@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TrustCheck API Test - Business Name Fix</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .test-card {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        h1 {
+            color: #2563eb;
+            margin-bottom: 10px;
+        }
+        .input-group {
+            margin: 15px 0;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        button {
+            background: #2563eb;
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        button:hover {
+            background: #1d4ed8;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 4px;
+            display: none;
+        }
+        .result.success {
+            background: #d1fae5;
+            border: 1px solid #10b981;
+            display: block;
+        }
+        .result.error {
+            background: #fee2e2;
+            border: 1px solid #ef4444;
+            display: block;
+        }
+        .result h3 {
+            margin-top: 0;
+        }
+        pre {
+            background: #f9fafb;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-card">
+        <h1>🧪 TrustCheck API Test - Business Name Fix</h1>
+        <p>Test that API preserves original business name from user input (not replacing with random mock name)</p>
+        
+        <div class="input-group">
+            <label>שם העסק (Business Name):</label>
+            <input type="text" id="businessName" value='סטודיו יוגה "שלווה"' placeholder="הכנס שם עסק">
+        </div>
+        
+        <div class="input-group">
+            <label>מספר ח.פ. (HP Number):</label>
+            <input type="text" id="hpNumber" value="345033898" placeholder="9 ספרות">
+        </div>
+        
+        <button onclick="testAPI()">🚀 Test API</button>
+        
+        <div id="result" class="result"></div>
+    </div>
+
+    <script>
+        async function testAPI() {
+            const businessName = document.getElementById('businessName').value;
+            const hpNumber = document.getElementById('hpNumber').value;
+            const resultDiv = document.getElementById('result');
+            
+            resultDiv.innerHTML = '<p>Loading...</p>';
+            resultDiv.className = 'result';
+            resultDiv.style.display = 'block';
+            
+            try {
+                const response = await fetch('http://46.224.147.252/api/report', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        businessName: businessName,
+                        registrationNumber: hpNumber
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    const isCorrect = data.businessData.name === businessName;
+                    
+                    resultDiv.className = isCorrect ? 'result success' : 'result error';
+                    resultDiv.innerHTML = `
+                        <h3>${isCorrect ? '✅ SUCCESS!' : '⚠️ WARNING'}</h3>
+                        <p><strong>Input businessName:</strong> ${businessName}</p>
+                        <p><strong>API returned name:</strong> ${data.businessData.name}</p>
+                        <p><strong>HP Number:</strong> ${data.businessData.registrationNumber}</p>
+                        <p><strong>Type:</strong> ${data.businessData.type}</p>
+                        <p><strong>Status:</strong> ${data.businessData.status}</p>
+                        ${isCorrect 
+                            ? '<p style="color: green; font-weight: bold;">🎉 Business name preserved correctly! Fix working!</p>' 
+                            : '<p style="color: red;">Names don\'t match - fix may not be working correctly</p>'}
+                        <details>
+                            <summary>Full Response</summary>
+                            <pre>${JSON.stringify(data, null, 2)}</pre>
+                        </details>
+                    `;
+                } else {
+                    resultDiv.className = 'result error';
+                    resultDiv.innerHTML = `
+                        <h3>❌ Error</h3>
+                        <p>${data.error || 'Unknown error'}</p>
+                    `;
+                }
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.innerHTML = `
+                    <h3>❌ Request Failed</h3>
+                    <p>${error.message}</p>
+                `;
+            }
+        }
+    </script>
+</body>
+</html>

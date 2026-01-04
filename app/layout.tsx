@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import './globals.css';
+import AIChat from '@/components/AIChat';
 
 export const metadata: Metadata = {
   title: 'TrustCheck Israel | בדיקת אמינות עסקים',
@@ -53,6 +54,7 @@ export default function RootLayout({
       </head>
       <body className="antialiased">
         {children}
+        <AIChat />
       </body>
     </html>
   );

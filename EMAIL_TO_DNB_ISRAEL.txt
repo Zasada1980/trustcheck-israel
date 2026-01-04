@@ -1,0 +1,144 @@
+TO: info@dnb.co.il
+CC: sales@dnb.co.il
+SUBJECT: API Integration Request - TrustCheck Israel (Startup B2C Platform)
+
+Shalom,
+
+We are developing **TrustCheck Israel** (trustcheck.co.il) - a B2C platform for parents 
+to verify business reliability before making payments to private service providers 
+(kindergartens, private tutors, after-school programs).
+
+Our mission: Help Israeli parents avoid fraud and financial losses by providing 
+transparent business verification reports.
+
+═══════════════════════════════════════════════════════════════════
+
+📊 WHAT WE NEED:
+
+API access to verify businesses by HP number (חברה פרטית / עוסק מורשה):
+
+1. **Osek Murshe Status Verification**
+   - Is HP number registered with Tax Authority?
+   - VAT registration status (מע"מ / פטור מע"מ)
+   
+2. **Court Cases Database**
+   - Active legal proceedings
+   - Civil cases
+   - Bankruptcy status
+   
+3. **Credit Rating (Basic)**
+   - Payment behavior
+   - Financial health indicator
+   
+4. **Company Ownership Structure** (for חברות בע"מ)
+   - Directors/shareholders
+   - Corporate history
+
+═══════════════════════════════════════════════════════════════════
+
+💻 TECHNICAL DETAILS:
+
+- **Tech Stack:** Next.js 14, PostgreSQL, TypeScript
+- **Expected Volume:** 1,000-2,000 checks/month (first 6 months)
+- **Use Case:** Real-time API calls when parent searches for business
+- **Response Time Needed:** <2 seconds
+- **Deployment:** Hetzner Cloud (EU - Germany datacenter)
+
+═══════════════════════════════════════════════════════════════════
+
+❓ QUESTIONS:
+
+1. Do you have **RESTful API documentation** in English?
+2. What is the **pricing** for a startup? (Currently 0 revenue, bootstrapped)
+   - Are there startup discounts or pay-per-use plans?
+   
+3. Do you offer a **Sandbox environment** for testing?
+   
+4. What is the typical **integration timeline**?
+   
+5. Do you provide **technical support** in English during integration?
+
+6. **Data licensing:** Can we cache responses for 30 days? Can we display 
+   D&B data in our reports to end users (with proper attribution)?
+
+7. **Volume pricing:** What happens if we exceed 2,000 checks/month?
+
+═══════════════════════════════════════════════════════════════════
+
+🏢 ABOUT TRUSTCHECK ISRAEL:
+
+- **Company Name:** TrustCheck Israel
+- **HP Number:** 345033898 (עוסק מורשה)
+- **Website:** trustcheck.co.il (launching January 2026)
+- **Stage:** MVP development (Phase 1 - "Validator")
+- **Target Market:** Israeli parents (B2C), small businesses (B2B later)
+- **Competitive Edge:** Hebrew-first, parent-friendly reports, AI-powered analysis
+
+We are currently waiting for Israel Tax Authority Open API access (application 
+submitted 25.12.2025), but need an interim solution to launch our Beta.
+
+D&B data would allow us to provide REAL verification reports while we complete 
+ITA registration (expected 2-4 weeks).
+
+═══════════════════════════════════════════════════════════════════
+
+📅 NEXT STEPS:
+
+Can we schedule a **30-minute call** this week or early January to discuss:
+- API capabilities demo
+- Pricing options for startups
+- Integration requirements
+- SLA and support model
+
+My availability:
+- Sunday-Thursday: 10:00-17:00 (Israel Time)
+- Prefer: Video call (Zoom/Teams) or phone
+
+═══════════════════════════════════════════════════════════════════
+
+📞 CONTACT INFORMATION:
+
+Name: [YOUR NAME]
+Title: Founder & CEO, TrustCheck Israel
+Email: [YOUR EMAIL]
+Phone: [YOUR PHONE - Israeli number preferred]
+LinkedIn: [YOUR LINKEDIN if available]
+
+Company:
+HP: 345033898
+Address: [YOUR BUSINESS ADDRESS]
+
+═══════════════════════════════════════════════════════════════════
+
+Looking forward to exploring a partnership with Dun & Bradstreet Israel.
+
+Best regards,
+[YOUR NAME]
+Founder, TrustCheck Israel
+trustcheck.co.il
+
+P.S. If D&B is not the right product for our use case, could you please recommend 
+an alternative D&B service or redirect me to the appropriate team?
+
+---
+РУССКАЯ ВЕРСИЯ (для внутренней подготовки):
+
+Мы создаём платформу для родителей, чтобы проверять надёжность частных бизнесов 
+(детские сады, репетиторы) перед оплатой. Нужен API D&B для проверки:
+- Статус Osek Murshe
+- Судебные дела
+- Кредитный рейтинг
+- Структура компании
+
+Объём: 1000-2000 проверок/месяц (первые 6 месяцев)
+Стек: Next.js + PostgreSQL
+Стадия: MVP, 0 выручки сейчас
+
+Нужно:
+1. Документация API (English)
+2. Цены для стартапа (скидки?)
+3. Sandbox для тестов
+4. Срок интеграции
+5. Можно ли кэшировать данные?
+
+Цель: Запустить Beta в январе 2026, пока ждём ITA API (подали 25.12.2025).

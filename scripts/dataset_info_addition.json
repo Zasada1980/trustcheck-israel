@@ -1,0 +1,12 @@
+{
+  "trustcheck_knowledge": {
+    "file_name": "trustcheck_knowledge_base.json",
+    "formatting": "alpaca",
+    "columns": {
+      "prompt": "instruction",
+      "query": "input",
+      "response": "output",
+      "system": "system"
+    }
+  }
+}

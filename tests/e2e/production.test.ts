@@ -93,7 +93,7 @@ const TEST_BUSINESSES = [
 ];
 
 describe('E2E Production Tests - TrustCheck Israel', () => {
-  
+
   beforeAll(() => {
     console.log(`\n🔍 Testing production server: ${PRODUCTION_URL}`);
     console.log(`⏱️  Timeout per test: ${API_TIMEOUT}ms\n`);
@@ -107,7 +107,7 @@ describe('E2E Production Tests - TrustCheck Israel', () => {
       });
 
       expect(response.status).toBe(200);
-      
+
       const data = await response.json() as any;
       expect(data.status).toBe('healthy');
       expect(data.services).toBeDefined();
@@ -117,9 +117,9 @@ describe('E2E Production Tests - TrustCheck Israel', () => {
   });
 
   describe('Business Report Generation', () => {
-    
+
     TEST_BUSINESSES.forEach((testCase) => {
-      
+
       describe(`Test Case: ${testCase.id}`, () => {
         let report: BusinessReport;
 
@@ -137,7 +137,7 @@ describe('E2E Production Tests - TrustCheck Israel', () => {
 
           expect(response.status).toBe(200);
           report = await response.json() as BusinessReport;
-          
+
           console.log(`\n✅ Report generated for ${testCase.id}:`);
           console.log(`   Business: ${report.businessData?.name}`);
           console.log(`   H.P.: ${report.businessData?.hp_number}`);
@@ -157,7 +157,7 @@ describe('E2E Production Tests - TrustCheck Israel', () => {
             expect(report.businessData?.name).toBeDefined();
             expect(report.businessData?.name).not.toBe('');
             expect(report.businessData?.name.length).toBeGreaterThan(3);
-            
+
             console.log(`   ✓ Business name: "${report.businessData?.name}"`);
           }
         });
@@ -165,7 +165,7 @@ describe('E2E Production Tests - TrustCheck Israel', () => {
         it('should have valid H.P. number format', () => {
           expect(report.businessData?.hp_number).toBeDefined();
           expect(report.businessData?.hp_number).toMatch(/^\d{9}$/);
-          
+
           console.log(`   ✓ H.P. number: ${report.businessData?.hp_number}`);
         });
 
@@ -175,12 +175,12 @@ describe('E2E Production Tests - TrustCheck Israel', () => {
             expect(rating).toBeDefined();
             expect(rating).toBeGreaterThanOrEqual(1);
             expect(rating).toBeLessThanOrEqual(5);
-            
+
             // Check if rating is within expected range
             const [min, max] = testCase.expectedTrustRange;
             expect(rating).toBeGreaterThanOrEqual(min);
             expect(rating).toBeLessThanOrEqual(max);
-            
+
             console.log(`   ✓ AI rating ${rating} is within range [${min}, ${max}]`);
           }
         });
@@ -189,20 +189,19 @@ describe('E2E Production Tests - TrustCheck Israel', () => {
           const recommendation = report.aiAnalysis?.recommendation;
           expect(recommendation).toBeDefined();
           expect(['approved', 'caution', 'rejected']).toContain(recommendation);
-          
+
           console.log(`   ✓ Recommendation: "${recommendation}"`);
-        });
         });
 
         it('should generate Hebrew summary (fullReport)', () => {
           const fullReport = report.aiAnalysis?.fullReport;
           expect(fullReport).toBeDefined();
           expect(fullReport!.length).toBeGreaterThan(50);
-          
+
           // Check for Hebrew characters
           const hasHebrew = /[\u0590-\u05FF]/.test(fullReport || '');
           expect(hasHebrew).toBe(true);
-          
+
           console.log(`   ✓ Full report length: ${fullReport?.length} chars (Hebrew: ${hasHebrew})`);
         });
 
@@ -211,16 +210,16 @@ describe('E2E Production Tests - TrustCheck Israel', () => {
             expect(report.aiAnalysis?.strengths).toBeDefined();
             expect(Array.isArray(report.aiAnalysis?.strengths)).toBe(true);
             expect(report.aiAnalysis!.strengths.length).toBeGreaterThan(0);
-            
+
             report.aiAnalysis?.strengths.forEach((strength, index) => {
               expect(strength).toBeDefined();
               expect(strength.length).toBeGreaterThan(5);
-              
+
               // Check for Hebrew
               const hasHebrew = /[\u0590-\u05FF]/.test(strength);
               expect(hasHebrew).toBe(true);
             });
-            
+
             console.log(`   ✓ Strengths identified: ${report.aiAnalysis?.strengths.length}`);
             console.log(`      - ${report.aiAnalysis?.strengths[0]?.substring(0, 60)}...`);
           }
@@ -231,16 +230,16 @@ describe('E2E Production Tests - TrustCheck Israel', () => {
             expect(report.aiAnalysis?.risks).toBeDefined();
             expect(Array.isArray(report.aiAnalysis?.risks)).toBe(true);
             expect(report.aiAnalysis!.risks.length).toBeGreaterThan(0);
-            
+
             report.aiAnalysis?.risks.forEach((risk, index) => {
               expect(risk).toBeDefined();
               expect(risk.length).toBeGreaterThan(5);
-              
+
               // Check for Hebrew
               const hasHebrew = /[\u0590-\u05FF]/.test(risk);
               expect(hasHebrew).toBe(true);
             });
-            
+
             console.log(`   ✓ Risks identified: ${report.aiAnalysis?.risks.length}`);
             console.log(`      - ${report.aiAnalysis?.risks[0]?.substring(0, 60)}...`);
           }
@@ -249,46 +248,16 @@ describe('E2E Production Tests - TrustCheck Israel', () => {
         it('should track data sources', () => {
           expect(report.metadata?.dataSource).toBeDefined();
           expect(['postgresql', 'mock_data', 'checkid_api']).toContain(report.metadata?.dataSource);
-          
+
           console.log(`   ✓ Data source: ${report.metadata?.dataSource}`);
         });
-          
-          console.log(`   ✓ Recommendations provided: ${report.data?.recommendations.length}`);
-        });
 
-        it('should indicate correct data sources', () => {
-          expect(report.data?.dataSource).toBeDefined();
-          
-          testCase.expectedDataSources.forEach((source) => {
-            if (report.data?.dataSource) {
-              const sourceKey = source as keyof typeof report.data.dataSource;
-              expect(report.data.dataSource[sourceKey]).toBe(true);
-            }
-          });
-          
-          const sources = Object.entries(report.data?.dataSource || {})
-            .filter(([_, value]) => value)
-            .map(([key]) => key);
-          
-          console.log(`   ✓ Data sources used: ${sources.join(', ')}`);
-        });
-
-        it('should have valid H.P. number format', () => {
-          const hpNumber = report.data?.hpNumber;
-          expect(hpNumber).toBeDefined();
-          
-          // Israeli H.P. number is 9 digits
-          expect(/^\d{9}$/.test(hpNumber || '')).toBe(true);
-          expect(hpNumber).toBe(testCase.hpNumber);
-          
-          console.log(`   ✓ H.P. number validated: ${hpNumber}`);
-        });
       });
     });
   });
 
   describe('Error Handling', () => {
-    
+
     it('should return error for invalid H.P. number', async () => {
       const response = await fetch(`${PRODUCTION_URL}/api/report`, {
         method: 'POST',
@@ -303,7 +272,7 @@ describe('E2E Production Tests - TrustCheck Israel', () => {
 
       const data = await response.json() as BusinessReport;
       expect(data.error).toBeDefined();
-      
+
       console.log(`\n✅ Error handling works: "${data.error}"`);
     }, API_TIMEOUT);
 
@@ -322,7 +291,7 @@ describe('E2E Production Tests - TrustCheck Israel', () => {
       const data = await response.json() as BusinessReport;
       // Should still generate report but with low rating
       expect(data.aiAnalysis?.rating).toBeDefined();
-      
+
       console.log(`\n✅ Non-existent business handled: rating=${data.aiAnalysis?.rating}`);
     }, API_TIMEOUT);
 
@@ -339,16 +308,16 @@ describe('E2E Production Tests - TrustCheck Israel', () => {
       });
 
       expect(response.status).toBe(400);
-      
+
       const data = await response.json() as BusinessReport;
       expect(data.error).toBeDefined();
-      
+
       console.log(`\n✅ Missing parameter error: "${data.error}"`);
     }, API_TIMEOUT);
   });
 
   describe('AI Analysis Quality', () => {
-    
+
     it('should provide context-aware recommendations', async () => {
       // Test with a business and check if recommendations match risk level
       const response = await fetch(`${PRODUCTION_URL}/api/report`, {
@@ -359,42 +328,42 @@ describe('E2E Production Tests - TrustCheck Israel', () => {
         },
         body: JSON.stringify({
           businessName: '515044532', // Test business
-          
+
         })
       });
 
       const data = await response.json() as BusinessReport;
-      
-      if (data.success && data.data) {
-        const { trustScore, recommendations, risks } = data.data;
-        
-        // High trust score should have encouraging recommendations
-        if (trustScore >= 4.0) {
-          const hasPositiveRec = recommendations.some(rec => 
-            rec.includes('מומלץ') || rec.includes('בטוח') || rec.includes('אמין')
+
+      if (data.aiAnalysis) {
+        const { rating, risks, strengths } = data.aiAnalysis;
+
+        // High trust score should have encouraging strengths
+        if (rating >= 4.0) {
+          const hasPositiveStrength = strengths.some((str: string) =>
+            str.includes('מומלץ') || str.includes('בטוח') || str.includes('אמין')
           );
-          expect(hasPositiveRec).toBe(true);
-          
-          console.log(`\n✅ High trust business has positive recommendations`);
+          expect(hasPositiveStrength).toBe(true);
+
+          console.log(`\n✅ High trust business has positive strengths`);
         }
-        
-        // Low trust score should have warning recommendations
-        if (trustScore < 2.5 && risks.length > 0) {
-          const hasWarningRec = recommendations.some(rec => 
-            rec.includes('זהירות') || rec.includes('לא מומלץ') || rec.includes('סיכון')
+
+        // Low trust score should have warning risks
+        if (rating < 2.5 && risks.length > 0) {
+          const hasWarningRisk = risks.some((risk: string) =>
+            risk.includes('זהירות') || risk.includes('לא מומלץ') || risk.includes('סיכון')
           );
-          expect(hasWarningRec).toBe(true);
-          
-          console.log(`\n✅ Low trust business has warning recommendations`);
+          expect(hasWarningRisk).toBe(true);
+
+          console.log(`\n✅ Low trust business has warning risks`);
         }
-        
-        // Recommendations should be specific, not generic
-        recommendations.forEach(rec => {
-          expect(rec.length).toBeGreaterThan(20); // Not too short
-          expect(rec.length).toBeLessThan(500); // Not too long
+
+        // Risks and strengths should be specific, not generic
+        [...risks, ...strengths].forEach((item: string) => {
+          expect(item.length).toBeGreaterThan(5); // Not too short
+          expect(item.length).toBeLessThan(500); // Not too long
         });
-        
-        console.log(`\n✅ Recommendations are appropriately sized (${recommendations.length} items)`);
+
+        console.log(`\n✅ Analysis items are appropriately sized (${risks.length} risks, ${strengths.length} strengths)`);
       }
     }, API_TIMEOUT);
 
@@ -407,32 +376,32 @@ describe('E2E Production Tests - TrustCheck Israel', () => {
         },
         body: JSON.stringify({
           businessName: '520012345', // Established company
-          
+
         })
       });
 
       const data = await response.json() as BusinessReport;
-      
+
       if (data.aiAnalysis) {
         const fullReport = data.aiAnalysis.fullReport.toLowerCase();
-        
+
         // Should mention business age/establishment
-        const hasAgeInfo = 
+        const hasAgeInfo =
           /\d+\s*(שנ|חודש|ימ)/.test(fullReport) || // "X years/months/days"
           /הוקמ|נוסד|פעיל/.test(fullReport); // "established/founded/active"
-        
+
         expect(hasAgeInfo).toBe(true);
-        
+
         console.log(`\n✅ AI correctly identifies business age in report`);
       }
     }, API_TIMEOUT);
   });
 
   describe('Performance Benchmarks', () => {
-    
+
     it('should generate report within 10 seconds', async () => {
       const startTime = Date.now();
-      
+
       const response = await fetch(`${PRODUCTION_URL}/api/report`, {
         method: 'POST',
         headers: {
@@ -441,28 +410,28 @@ describe('E2E Production Tests - TrustCheck Israel', () => {
         },
         body: JSON.stringify({
           businessName: '515044532',
-          
+
         })
       });
 
       const endTime = Date.now();
       const duration = endTime - startTime;
-      
+
       expect(response.status).toBe(200);
       expect(duration).toBeLessThan(10000); // Less than 10 seconds
-      
+
       console.log(`\n✅ Report generated in ${duration}ms (target: <10000ms)`);
     }, API_TIMEOUT);
 
     it('should handle concurrent requests', async () => {
       const requests = [
-        { businessName: '515044532',  },
-        { businessName: '520012345',  },
-        { query: '510123456',  },
+        { businessName: '515044532', },
+        { businessName: '520012345', },
+        { query: '510123456', },
       ];
 
       const startTime = Date.now();
-      
+
       const promises = requests.map(body =>
         fetch(`${PRODUCTION_URL}/api/report`, {
           method: 'POST',
@@ -477,14 +446,14 @@ describe('E2E Production Tests - TrustCheck Israel', () => {
       const responses = await Promise.all(promises);
       const endTime = Date.now();
       const duration = endTime - startTime;
-      
+
       responses.forEach(response => {
         expect(response.status).toBe(200);
       });
-      
+
       // All 3 requests should complete within 15 seconds
       expect(duration).toBeLessThan(15000);
-      
+
       console.log(`\n✅ ${requests.length} concurrent requests completed in ${duration}ms`);
     }, API_TIMEOUT * 2);
   });

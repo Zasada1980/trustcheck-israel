@@ -12,6 +12,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { generateBusinessReport, extractKeyFacts } from '@/lib/gemini';
 import { getBusinessData, checkDataSourcesHealth } from '@/lib/unified_data';
 import { getMockBusinessData } from '@/lib/checkid';
+import { apiGenerateTrustReport, checkModelAvailability } from '@/lib/trustcheck_local_model';
 
 export async function POST(req: NextRequest) {
   try {
@@ -78,7 +79,38 @@ export async function POST(req: NextRequest) {
 
     // Генерация отчета с помощью Gemini
     console.log('[API] Generating AI report for:', businessData.nameHebrew);
-    const report = await generateBusinessReport(checkIDCompatibleData);
+    
+    // Try local model first, fallback to Gemini
+    let report: string;
+    let modelUsed: string;
+    
+    try {
+      const localModelAvailable = await checkModelAvailability();
+      
+      if (localModelAvailable) {
+        console.log('[API] Using local TrustCheck Hebrew model');
+        const localResponse = await apiGenerateTrustReport({
+          nameHebrew: businessData.nameHebrew,
+          hpNumber: businessData.hpNumber,
+          businessType: businessData.companyType,
+          status: businessData.status,
+          registrationDate: businessData.registrationDate,
+        });
+        
+        if (localResponse.success) {
+          report = localResponse.report;
+          modelUsed = 'trustcheck-hebrew-local';
+        } else {
+          throw new Error('Local model failed: ' + localResponse.error);
+        }
+      } else {
+        throw new Error('Local model not available');
+      }
+    } catch (localError) {
+      console.warn('[API] Local model error, falling back to Gemini:', (localError as Error).message);
+      report = await generateBusinessReport(checkIDCompatibleData);
+      modelUsed = 'gemini-2.0-flash';
+    }
 
     // Извлечение ключевых фактов
     const keyFacts = await extractKeyFacts(report);
@@ -114,11 +146,12 @@ export async function POST(req: NextRequest) {
       },
       metadata: {
         generatedAt: new Date().toISOString(),
-        model: 'gemini-2.0-flash',
+        model: modelUsed,
         dataSource: businessData.dataSource,
         dataQuality: businessData.dataQuality,
         cacheHit: businessData.cacheHit,
         lastUpdated: businessData.lastUpdated,
+        isLocalModel: modelUsed === 'trustcheck-hebrew-local',
       },
     });
   } catch (error) {
