@@ -1,0 +1,4 @@
+FROM .
+
+PARAMETER stop "<|im_end|>"
+PARAMETER num_ctx 4096

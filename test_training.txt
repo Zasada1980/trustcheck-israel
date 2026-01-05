@@ -1,0 +1,34 @@
+# Тест системы обучения AI - TrustCheck Israel
+
+## О проекте TrustCheck
+
+TrustCheck Israel - это платформа для проверки надёжности бизнесов в Израиле.
+
+### Основные возможности:
+- Проверка компаний по ח.פ. (номер HP)
+- Интеграция с правительственными базами данных
+- AI-анализ с использованием Google Gemini
+- Режим разработчика для обучения AI
+
+### Ссылки:
+- Репозиторий: https://github.com/Zasada1980/trustcheck-israel
+- Документация API: https://github.com/Zasada1980/trustcheck-israel/blob/main/ADMIN_CHAT_GUIDE.md
+- Основной сайт: https://trustcheck.co.il
+
+### Технологии:
+- Next.js 14 App Router
+- PostgreSQL (716,714 компаний)
+- Google Gemini AI
+- Ollama (локальная модель)
+- Docker + Nginx
+
+## Для AI:
+Этот документ содержит 3 URL для тестирования web scraping:
+1. GitHub репозиторий
+2. Документация
+3. Главная страница
+
+После обработки AI должен уметь отвечать на вопросы:
+- "Где находится код проекта?" → GitHub
+- "Как называется проект?" → TrustCheck Israel
+- "Какие технологии используются?" → Next.js, PostgreSQL, AI

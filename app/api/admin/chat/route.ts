@@ -87,24 +87,24 @@ export async function POST(request: NextRequest) {
 
     // Call Ollama AI
     const ollamaUrl = process.env.OLLAMA_API_URL || 'http://localhost:11434';
-    const model = process.env.OLLAMA_MODEL || 'trustcheck:15b';
+    const model = process.env.OLLAMA_MODEL || 'qwen2.5:1.5b-instruct-q4_K_M';
 
-    const prompt = `Ты — AI-ассистент для панели администратора TrustCheck Israel. Отвечай ТОЛЬКО на русском языке.
+    const prompt = `SYSTEM: You are a Russian-speaking AI assistant. Answer ONLY in Russian language.
 
+CONTEXT:
 ${contextParts.length > 0 ? contextParts.join('\n') + '\n\n' : ''}
 
 ${conversationContext ? 'История разговора:\n' + conversationContext + '\n\n' : ''}
 
-Вопрос пользователя: ${message}
+USER QUESTION: ${message}
 
-Инструкции:
-- Отвечай ТОЛЬКО на русском языке (даже если вопрос на иврите/английском)
-- Будь кратким и полезным
-- Если используешь информацию из документов, укажи источник
-- Для технических вопросов давай подробные объяснения
-- Для вопросов об обучении объясняй процесс пошагово
+RULES:
+- Answer in RUSSIAN language ONLY (no Hebrew, no English)
+- Be concise and helpful
+- If using document context, mention the source
+- For technical questions, provide detailed explanations
 
-Ответ (ТОЛЬКО на русском):`;
+ASSISTANT (in Russian):`;
 
     const response = await fetch(`${ollamaUrl}/api/generate`, {
       method: 'POST',
