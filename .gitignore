@@ -49,6 +49,16 @@ lerna-debug.log*
 .settings/
 
 # ============================================
+# Admin Panel Data (SENSITIVE - NEVER COMMIT!)
+# ============================================
+data/uploads/
+data/training/
+data/documents.json
+data/vector_db.json
+data/admin_chat_history.json
+data/training_logs.json
+
+# ============================================
 # Testing Coverage
 # ============================================
 coverage/
