@@ -6,12 +6,16 @@ import Stats from '@/components/Stats';
 import Testimonials from '@/components/Testimonials';
 import FAQ from '@/components/FAQ';
 import CTA from '@/components/CTA';
+import DeveloperMenu from '@/components/DeveloperMenu';
 
 export default function HomePage() {
   return (
     <div className="min-h-screen bg-white">
       {/* Header with Navigation */}
       <Header />
+      
+      {/* Developer Menu - Floating Button */}
+      <DeveloperMenu />
 
       {/* Hero Section */}
       <section className="bg-gradient-to-br from-blue-50 to-indigo-100 py-16 px-4">
