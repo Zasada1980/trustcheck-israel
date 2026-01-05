@@ -87,24 +87,26 @@ export async function POST(request: NextRequest) {
 
     // Call Ollama AI
     const ollamaUrl = process.env.OLLAMA_API_URL || 'http://localhost:11434';
-    const model = process.env.OLLAMA_MODEL || 'qwen2.5:1.5b-instruct-q4_K_M';
+    const model = process.env.OLLAMA_MODEL || 'qwen2.5:7b-instruct';
 
-    const prompt = `SYSTEM: You are a Russian-speaking AI assistant. Answer ONLY in Russian language.
+    // CRITICAL: Qwen 2.5 requires English instructions + Cyrillic output
+    // Russian prompts are seen as "garbled text" by the model
+    const prompt = `SYSTEM: You are a helpful AI assistant for TrustCheck Israel admin panel. You MUST respond in RUSSIAN language using Cyrillic script.
 
 CONTEXT:
 ${contextParts.length > 0 ? contextParts.join('\n') + '\n\n' : ''}
 
-${conversationContext ? 'История разговора:\n' + conversationContext + '\n\n' : ''}
+${conversationContext ? 'Conversation history:\n' + conversationContext + '\n\n' : ''}
 
-USER QUESTION: ${message}
+USER QUESTION (translate to Russian if needed): ${message}
 
 RULES:
-- Answer in RUSSIAN language ONLY (no Hebrew, no English)
+- Always use RUSSIAN language (Cyrillic script)
 - Be concise and helpful
-- If using document context, mention the source
-- For technical questions, provide detailed explanations
+- If using document context, cite the source
+- Never use Hebrew, Chinese, or English in your response
 
-ASSISTANT (in Russian):`;
+ASSISTANT (in Russian, Cyrillic):`;
 
     const response = await fetch(`${ollamaUrl}/api/generate`, {
       method: 'POST',
