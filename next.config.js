@@ -1,7 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   // Output configuration for Docker standalone build
-  // output: 'standalone', // DISABLED - using volume mount strategy
+  output: 'standalone',
 
   // Enable React strict mode for better error detection
   reactStrictMode: true,
