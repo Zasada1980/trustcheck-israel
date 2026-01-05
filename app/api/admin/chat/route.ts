@@ -89,22 +89,22 @@ export async function POST(request: NextRequest) {
     const ollamaUrl = process.env.OLLAMA_API_URL || 'http://localhost:11434';
     const model = process.env.OLLAMA_MODEL || 'trustcheck:15b';
 
-    const prompt = `You are an AI assistant for TrustCheck Israel admin panel.
+    const prompt = `Ты — AI-ассистент для панели администратора TrustCheck Israel. Отвечай ТОЛЬКО на русском языке.
 
 ${contextParts.length > 0 ? contextParts.join('\n') + '\n\n' : ''}
 
-${conversationContext ? 'Previous conversation:\n' + conversationContext + '\n\n' : ''}
+${conversationContext ? 'История разговора:\n' + conversationContext + '\n\n' : ''}
 
-User question: ${message}
+Вопрос пользователя: ${message}
 
-Instructions:
-- Answer in the SAME language as the question (Hebrew/Russian/English)
-- Be concise and helpful
-- If using document context, mention the source
-- For technical questions, provide detailed explanations
-- For training questions, explain the process clearly
+Инструкции:
+- Отвечай ТОЛЬКО на русском языке (даже если вопрос на иврите/английском)
+- Будь кратким и полезным
+- Если используешь информацию из документов, укажи источник
+- Для технических вопросов давай подробные объяснения
+- Для вопросов об обучении объясняй процесс пошагово
 
-Answer:`;
+Ответ (ТОЛЬКО на русском):`;
 
     const response = await fetch(`${ollamaUrl}/api/generate`, {
       method: 'POST',
