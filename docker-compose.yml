@@ -67,6 +67,10 @@ services:
       - GOOGLE_GEMINI_MODEL=${GOOGLE_GEMINI_MODEL:-gemini-2.0-flash}
       - GOOGLE_API_ENDPOINT=${GOOGLE_API_ENDPOINT:-https://generativelanguage.googleapis.com/v1beta}
       
+      # Ollama Local AI (via Cloudflare Tunnel)
+      - OLLAMA_API_URL=${OLLAMA_API_URL}
+      - OLLAMA_MODEL=${OLLAMA_MODEL:-trustcheck:15b}
+      
       # Stripe Payment
       - STRIPE_PUBLIC_KEY=${STRIPE_PUBLIC_KEY}
       - STRIPE_SECRET_KEY=${STRIPE_SECRET_KEY}
