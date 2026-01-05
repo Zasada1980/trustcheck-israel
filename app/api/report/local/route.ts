@@ -23,12 +23,19 @@ export async function POST(request: NextRequest) {
     console.log(`[TrustCheck Local Model] Generating report for: ${hpNumber}`);
 
     // 1. Получить данные о компании из БД
-    let businessData: UnifiedBusinessData;
+    let businessData: UnifiedBusinessData | null;
     try {
       businessData = await getBusinessData(hpNumber, {
         includeLegal: true,
         forceRefresh: false,
       });
+      
+      if (!businessData) {
+        return NextResponse.json(
+          { error: 'Business not found' },
+          { status: 404 }
+        );
+      }
     } catch (error) {
       console.error('Error fetching business data:', error);
       return NextResponse.json(
@@ -44,10 +51,10 @@ export async function POST(request: NextRequest) {
       businessType: businessData.companyType,
       status: businessData.status,
       registrationDate: businessData.registrationDate,
-      address: businessData.addressStreet,
-      city: businessData.addressCity,
-      legalCases: businessData.legalCases?.length || 0,
-      executionProceedings: businessData.executionProceedings?.length || 0,
+      address: businessData.address?.street || '',
+      city: businessData.address?.city || '',
+      legalCases: businessData.legalIssues?.activeCases || 0,
+      executionProceedings: businessData.legalIssues?.executionProceedings || 0,
       violations: businessData.violations,
     });
 

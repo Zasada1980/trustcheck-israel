@@ -10,16 +10,21 @@ interface Message {
 }
 
 export default function AIChat() {
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      role: 'assistant',
-      content: 'שלום! אני עוזר AI של TrustCheck. איך אוכל לעזור לך?',
-      timestamp: new Date(),
-    },
-  ]);
+  const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  // Initialize welcome message on client side only
+  useEffect(() => {
+    setMessages([
+      {
+        role: 'assistant',
+        content: 'שלום! אני עוזר AI של TrustCheck. איך אוכל לעזור לך?',
+        timestamp: new Date(),
+      },
+    ]);
+  }, []);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
